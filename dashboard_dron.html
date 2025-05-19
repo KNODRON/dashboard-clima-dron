@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Clima Dron</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e1e;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .info-box {
+      background: #2c2c2c;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .status {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .green { color: #0f0; }
+    .yellow { color: #ff0; }
+    .red { color: #f00; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">🛰️ Dashboard Táctico de Clima para Vuelo de Dron</div>
+    <div class="info-box" id="weatherInfo">Cargando datos...</div>
+    <canvas id="forecastChart" height="100"></canvas>
+  </div>
+
+  <script>
+    const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
+    const LAT = -33.45; // Santiago centro aproximado
+    const LON = -70.66;
+
+    async function getWeather() {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`);
+      const data = await res.json();
+
+      const infoBox = document.getElementById("weatherInfo");
+      const current = data.list[0];
+      const viento = current.wind.speed;
+      const lluvia = current.pop * 100;
+      const nubosidad = current.clouds.all;
+      const visibilidad = current.visibility / 1000;
+      const temp = current.main.temp;
+      const hora = new Date(current.dt_txt).toLocaleString();
+
+      let status = "";
+      if (viento > 30 || lluvia > 30 || visibilidad < 5) {
+        status = '<span class="status red">⛔ NO RECOMENDADO para vuelo de dron</span>';
+      } else if (viento > 20 || lluvia > 10 || nubosidad > 70) {
+        status = '<span class="status yellow">⚠️ Precaución: condiciones moderadas</span>';
+      } else {
+        status = '<span class="status green">✅ Condiciones óptimas para volar</span>';
+      }
+
+      infoBox.innerHTML = `
+        <p><strong>Hora del pronóstico:</strong> ${hora}</p>
+        <p><strong>Temperatura:</strong> ${temp} °C</p>
+        <p><strong>Viento:</strong> ${viento} km/h</p>
+        <p><strong>Lluvia (probabilidad):</strong> ${lluvia}%</p>
+        <p><strong>Nubosidad:</strong> ${nubosidad}%</p>
+        <p><strong>Visibilidad:</strong> ${visibilidad} km</p>
+        <p>${status}</p>
+      `;
+
+      const labels = data.list.slice(0, 8).map(i => new Date(i.dt_txt).getHours() + 'h');
+      const vientoData = data.list.slice(0, 8).map(i => i.wind.speed);
+
+      new Chart(document.getElementById("forecastChart"), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Viento (km/h)',
+            data: vientoData,
+            borderWidth: 2,
+            fill: false,
+            tension: 0.3
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { labels: { color: '#fff' } }
+          },
+          scales: {
+            x: { ticks: { color: '#fff' } },
+            y: { ticks: { color: '#fff' } }
+          }
+        }
+      });
+    }
+
+    getWeather();
+  </script>
+</body>
+</html>
