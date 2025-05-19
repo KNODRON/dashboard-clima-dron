@@ -1,2 +1,2 @@
 # dashboard-clima-dron
-istema táctico de clima para vuelos con dron
+sistema táctico de clima para vuelos con dron
