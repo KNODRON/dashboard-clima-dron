@@ -53,7 +53,7 @@
     <select id="ciudad" onchange="getWeather()">
       <option value="Santiago,CL">Santiago Centro</option>
       <option value="Cerrillos,CL">Cerrillos</option>
-      <option value="Isla de Maipo,CL">Isla de Maipo</option>
+      <option value="San Fabian de Alico,CL"> San Fabian de Alico</option>
     </select>
 
     <div class="info-box" id="weatherInfo">Cargando datos...</div>
@@ -80,7 +80,8 @@
       const temp = current.main.temp;
       const icon = current.weather[0].icon;
       const descripcion = current.weather[0].description;
-      const hora = new Date(current.dt_txt).toLocaleString();
+      const horaPronostico = new Date(current.dt_txt).toLocaleString();
+      const horaActual = new Date().toLocaleString();
 
       const amanecer = new Date(data.city.sunrise * 1000).toLocaleTimeString();
       const atardecer = new Date(data.city.sunset * 1000).toLocaleTimeString();
@@ -96,7 +97,8 @@
 
       document.getElementById("weatherInfo").innerHTML = `
         <p><img class="icono" src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="icono clima"> <strong>${descripcion.toUpperCase()}</strong></p>
-        <p><strong>Hora del pronóstico:</strong> ${hora}</p>
+        <p><strong>Hora actual:</strong> ${horaActual}</p>
+        <p><strong>Hora del pronóstico:</strong> ${horaPronostico}</p>
         <p><strong>Temperatura:</strong> ${temp.toFixed(1)} °C</p>
         <p><strong>Viento:</strong> ${viento} km/h</p>
         <p><strong>Lluvia (probabilidad):</strong> ${lluvia.toFixed(1)}%</p>
