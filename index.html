@@ -97,7 +97,7 @@
       document.getElementById("weatherInfo").innerHTML = `
         <p><img class="icono" src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="icono clima"> <strong>${descripcion.toUpperCase()}</strong></p>
         <p><strong>Hora del pronóstico:</strong> ${hora}</p>
-        <p><strong>Temperatura:</strong> ${temp} °C</p>
+        <p><strong>Temperatura:</strong> ${temp.toFixed(1)} °C</p>
         <p><strong>Viento:</strong> ${viento} km/h</p>
         <p><strong>Lluvia (probabilidad):</strong> ${lluvia.toFixed(1)}%</p>
         <p><strong>Nubosidad:</strong> ${nubosidad}%</p>
