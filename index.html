@@ -35,32 +35,55 @@
     .green { color: #0f0; }
     .yellow { color: #ff0; }
     .red { color: #f00; }
+    select {
+      margin-bottom: 20px;
+      padding: 5px;
+    }
+    img.icono {
+      width: 50px;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="title">🛰️ Dashboard Táctico de Clima para Vuelo de Dron</div>
+
+    <label for="ciudad">Selecciona ubicación:</label>
+    <select id="ciudad" onchange="getWeather()">
+      <option value="Santiago,CL">Santiago Centro</option>
+      <option value="Cerrillos,CL">Cerrillos</option>
+      <option value="Isla de Maipo,CL">Isla de Maipo</option>
+    </select>
+
     <div class="info-box" id="weatherInfo">Cargando datos...</div>
     <canvas id="forecastChart" height="100"></canvas>
   </div>
 
   <script>
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
-    const LAT = -33.45; // Santiago centro aproximado
-    const LON = -70.66;
 
     async function getWeather() {
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&units=metric&lang=es&appid=${API_KEY}`);
+      const ciudad = document.getElementById('ciudad').value;
+      const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${ciudad}&limit=1&appid=${API_KEY}`);
+      const geoData = await geoRes.json();
+      const { lat, lon } = geoData[0];
+
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`);
       const data = await res.json();
 
-      const infoBox = document.getElementById("weatherInfo");
       const current = data.list[0];
       const viento = current.wind.speed;
       const lluvia = current.pop * 100;
       const nubosidad = current.clouds.all;
       const visibilidad = current.visibility / 1000;
       const temp = current.main.temp;
+      const icon = current.weather[0].icon;
+      const descripcion = current.weather[0].description;
       const hora = new Date(current.dt_txt).toLocaleString();
+
+      const amanecer = new Date(data.city.sunrise * 1000).toLocaleTimeString();
+      const atardecer = new Date(data.city.sunset * 1000).toLocaleTimeString();
 
       let status = "";
       if (viento > 30 || lluvia > 30 || visibilidad < 5) {
@@ -71,13 +94,16 @@
         status = '<span class="status green">✅ Condiciones óptimas para volar</span>';
       }
 
-      infoBox.innerHTML = `
+      document.getElementById("weatherInfo").innerHTML = `
+        <p><img class="icono" src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="icono clima"> <strong>${descripcion.toUpperCase()}</strong></p>
         <p><strong>Hora del pronóstico:</strong> ${hora}</p>
         <p><strong>Temperatura:</strong> ${temp} °C</p>
         <p><strong>Viento:</strong> ${viento} km/h</p>
-        <p><strong>Lluvia (probabilidad):</strong> ${lluvia}%</p>
+        <p><strong>Lluvia (probabilidad):</strong> ${lluvia.toFixed(1)}%</p>
         <p><strong>Nubosidad:</strong> ${nubosidad}%</p>
         <p><strong>Visibilidad:</strong> ${visibilidad} km</p>
+        <p><strong>Amanecer:</strong> ${amanecer}</p>
+        <p><strong>Atardecer:</strong> ${atardecer}</p>
         <p>${status}</p>
       `;
 
@@ -108,7 +134,7 @@
       });
     }
 
-    getWeather();
+    window.onload = getWeather;
   </script>
 </body>
 </html>
