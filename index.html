@@ -7,53 +7,69 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #1e1e1e;
-      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f1115;
+      color: #e2e8f0;
       margin: 0;
       padding: 20px;
-      position: relative;
     }
     .container {
-      max-width: 800px;
+      max-width: 1000px;
       margin: auto;
     }
     .title {
       text-align: center;
-      font-size: 24px;
+      font-size: 26px;
       margin-bottom: 20px;
+      color: #7dd3fc;
     }
     .info-box {
-      background: #2c2c2c;
-      padding: 15px;
-      border-radius: 8px;
+      background: #1f2937;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #0ea5e9;
       margin-bottom: 20px;
     }
     .status {
       font-weight: bold;
       font-size: 18px;
     }
-    .green { color: #0f0; }
-    .yellow { color: #ff0; }
-    .red { color: #f00; }
+    .green { color: #22c55e; }
+    .yellow { color: #facc15; }
+    .red { color: #ef4444; }
     select {
       margin-bottom: 20px;
-      padding: 5px;
+      padding: 8px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 6px;
     }
     img.icono {
-      width: 50px;
+      width: 48px;
       vertical-align: middle;
+    }
+    canvas {
+      background-color: #1e293b;
+      border-radius: 10px;
+      padding: 10px;
     }
     .nota-legal {
       font-size: 10px;
       text-align: right;
-      color: #999;
+      color: #6b7280;
       margin-top: 30px;
+    }
+    .dron-logo {
+      display: block;
+      margin: 0 auto 10px auto;
+      width: 60px;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/3038/3038894.png" class="dron-logo" alt="Dron">
     <div class="title">🛰️ PANEL TÁCTICO PARA VUELO RPA</div>
 
     <label for="ciudad">Selecciona ubicación:</label>
@@ -137,6 +153,7 @@
           datasets: [{
             label: 'Viento (km/h)',
             data: vientoData,
+            borderColor: '#0ea5e9',
             borderWidth: 2,
             fill: false,
             tension: 0.3
@@ -144,11 +161,11 @@
         },
         options: {
           plugins: {
-            legend: { labels: { color: '#fff' } }
+            legend: { labels: { color: '#e2e8f0' } }
           },
           scales: {
-            x: { ticks: { color: '#fff' } },
-            y: { ticks: { color: '#fff' } }
+            x: { ticks: { color: '#e2e8f0' } },
+            y: { ticks: { color: '#e2e8f0' } }
           }
         }
       });
