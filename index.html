@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard Clima Dron</title>
+  <title>PANEL TÁCTICO PARA VUELO RPA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -12,6 +12,7 @@
       color: #fff;
       margin: 0;
       padding: 20px;
+      position: relative;
     }
     .container {
       max-width: 800px;
@@ -43,11 +44,17 @@
       width: 50px;
       vertical-align: middle;
     }
+    .nota-legal {
+      font-size: 10px;
+      text-align: right;
+      color: #999;
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="title">🛰️ Dashboard Táctico de Clima para Vuelo de Dron</div>
+    <div class="title">🛰️ PANEL TÁCTICO PARA VUELO RPA</div>
 
     <label for="ciudad">Selecciona ubicación:</label>
     <select id="ciudad" onchange="getWeather()">
@@ -60,6 +67,10 @@
 
     <div class="info-box" id="weatherInfo">Cargando datos...</div>
     <canvas id="forecastChart" height="100"></canvas>
+
+    <div class="nota-legal">
+      ⚠️ este panel es una herramienta de apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
+    </div>
   </div>
 
   <script>
