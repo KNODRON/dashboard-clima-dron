@@ -60,16 +60,10 @@
       color: #6b7280;
       margin-top: 30px;
     }
-    .dron-logo {
-      display: block;
-      margin: 0 auto 10px auto;
-      width: 64px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="https://cdn-icons-png.flaticon.com/512/10751/10751693.png" class="dron-logo" alt="Dron real">
     <div class="title">🛰️ PANEL TÁCTICO PARA VUELO RPA</div>
 
     <label for="ciudad">Selecciona ubicación:</label>
@@ -85,7 +79,7 @@
     <canvas id="forecastChart" height="100"></canvas>
 
     <div class="nota-legal">
-      ⚠️ este panel es una herramienta de apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
+      ⚠️ este panel es una herramienta de apoyo y no reemplaza la verificación visual ni el criterio del piloto rpa.
     </div>
   </div>
 
@@ -113,9 +107,6 @@
       const horaPronostico = new Date(current.dt_txt).toLocaleString();
       const horaActual = new Date().toLocaleString();
 
-      const amanecer = new Date(data.city.sunrise * 1000).toLocaleTimeString();
-      const atardecer = new Date(data.city.sunset * 1000).toLocaleTimeString();
-
       let status = "";
       if (viento > 30 || lluvia > 30 || visibilidad < 5) {
         status = '<span class="status red">⛔ NO RECOMENDADO para vuelo de dron</span>';
@@ -134,8 +125,6 @@
         <p><strong>Lluvia (probabilidad):</strong> ${lluvia.toFixed(1)}%</p>
         <p><strong>Nubosidad:</strong> ${nubosidad}%</p>
         <p><strong>Visibilidad:</strong> ${visibilidad} km</p>
-        <p><strong>Amanecer:</strong> ${amanecer}</p>
-        <p><strong>Atardecer:</strong> ${atardecer}</p>
         <p>${status}</p>
       `;
 
