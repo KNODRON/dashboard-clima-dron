@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>¿Volar o no volar? | Clima táctico para RPA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
@@ -16,118 +15,68 @@
     .container {
       max-width: 1000px;
       margin: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
     }
     .title {
       text-align: center;
-      font-size: 26px;
-      margin-bottom: 10px;
+      font-size: 28px;
+      margin-bottom: 20px;
       color: #7dd3fc;
     }
-    .info-box {
-      background: #1f2937;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #0ea5e9;
-    }
-    .status {
-      font-weight: bold;
-      font-size: 18px;
-    }
-    .green { color: #22c55e; }
-    .yellow { color: #facc15; }
-    .red { color: #ef4444; }
-    select {
-      margin-bottom: 10px;
-      padding: 8px;
-      background: #1e293b;
-      color: #e2e8f0;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      width: 100%;
-    }
-    img.icono {
-      width: 48px;
-      vertical-align: middle;
-    }
-    .brujula-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+    .grid-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
       margin-top: 20px;
     }
-    .brujula {
-      width: 100px;
-      height: 100px;
-      border: 4px solid #334155;
-      border-radius: 50%;
-      position: relative;
+    .card {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 0 8px #0ea5e9;
     }
-    .flecha {
-      width: 4px;
-      height: 40px;
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform-origin: bottom center;
+    .card-title {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .card-value {
+      font-size: 20px;
+      font-weight: bold;
+      color: #e2e8f0;
+    }
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 6px;
     }
     .nota-legal {
       font-size: 10px;
       text-align: right;
       color: #6b7280;
-    }
-    .chart-container {
-      position: relative;
-      width: 100%;
-      height: 300px;
-    }
-    canvas {
-      width: 100% !important;
-      height: 100% !important;
-      background-color: #1e293b;
-      border-radius: 10px;
-      padding: 10px;
-    }
-    @media screen and (max-width: 600px) {
-      .title {
-        font-size: 20px;
-      }
-      .status {
-        font-size: 16px;
-      }
-      .chart-container {
-        height: 250px;
-      }
+      margin-top: 30px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="title">¿VOLAR O NO VOLAR?</div>
-    <div class="title">Monitorea. Evalúa. Vuela</div>
+    <div class="title">¿Volar o no volar?</div>
 
-    <label for="ciudad">Selecciona ubicación:</label>
-    <select id="ciudad" onchange="getWeather()">
-      <option value="Santiago,CL">Santiago Centro</option>
-      <option value="Cerrillos,CL">Cerrillos</option>
-      <option value="Curacaví,CL">Curacaví</option>
-      <option value="San Fabian de Alico,CL">San Fabian de Alico</option>
-      <option value="Chillan,CL">Chillan</option>
-      <option value="Punta Arenas,CL">Punta Arenas</option>
-    </select>
-
-    <div class="info-box" id="weatherInfo">Cargando datos...</div>
-    <div class="brujula-container">
-      <div class="brujula">
-        <div id="flechaViento" class="flecha"></div>
+    <div class="grid-panel">
+      <div class="card">
+        <div class="card-icon">🌡️</div>
+        <div class="card-title">Temperatura</div>
+        <div class="card-value" id="tempValue">-- °C</div>
       </div>
-      <p id="direccionTexto"></p>
-    </div>
-    <div class="chart-container">
-      <canvas id="forecastChart"></canvas>
+      <div class="card">
+        <div class="card-icon">💨</div>
+        <div class="card-title">Viento</div>
+        <div class="card-value" id="windValue">-- km/h</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">☀️</div>
+        <div class="card-title">Salida / Puesta</div>
+        <div class="card-value" id="sunValue">-- : --</div>
+      </div>
     </div>
 
     <div class="nota-legal">
@@ -136,101 +85,10 @@
   </div>
 
   <script>
-    const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
-    let chart = null;
-
-    function gradosACardinal(deg) {
-      const direcciones = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
-      return direcciones[Math.round(deg / 45) % 8];
-    }
-
-    async function getWeather() {
-      const ciudad = document.getElementById('ciudad').value;
-      const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${ciudad}&limit=1&appid=${API_KEY}`);
-      const geoData = await geoRes.json();
-      const { lat, lon } = geoData[0];
-
-      const res = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`);
-      const data = await res.json();
-
-      const current = data.list[0];
-      const viento = current.wind.speed;
-      const direccion = current.wind.deg;
-      const lluvia = current.pop * 100;
-      const nubosidad = current.clouds.all;
-      const visibilidad = current.visibility / 1000;
-      const temp = current.main.temp;
-      const icon = current.weather[0].icon;
-      const descripcion = current.weather[0].description;
-      const horaPronostico = new Date(current.dt_txt).toLocaleString();
-      const horaActual = new Date().toLocaleString();
-
-      let status = "";
-      if (viento > 30 || lluvia > 30 || visibilidad < 5) {
-        status = '<span class="status red">⛔ NO RECOMENDADO para vuelo de dron</span>';
-      } else if (viento > 20 || lluvia > 10 || nubosidad > 70) {
-        status = '<span class="status yellow">⚠️ Precaución: condiciones moderadas</span>';
-      } else {
-        status = '<span class="status green">✅ Condiciones óptimas para volar</span>';
-      }
-
-      document.getElementById("weatherInfo").innerHTML = `
-        <p><img class="icono" src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="icono clima"> <strong>${descripcion.toUpperCase()}</strong></p>
-        <p><strong>Hora actual:</strong> ${horaActual}</p>
-        <p><strong>Hora del pronóstico:</strong> ${horaPronostico}</p>
-        <p><strong>Temperatura:</strong> ${temp.toFixed(1)} °C</p>
-        <p><strong>Viento:</strong> ${viento} km/h</p>
-        <p><strong>Dirección del viento:</strong> ${direccion}° (${gradosACardinal(direccion)})</p>
-        <p><strong>Lluvia (probabilidad):</strong> ${lluvia.toFixed(1)}%</p>
-        <p><strong>Nubosidad:</strong> ${nubosidad}%</p>
-        <p><strong>Visibilidad:</strong> ${visibilidad} km</p>
-        <p>${status}</p>
-      `;
-
-      const flecha = document.getElementById("flechaViento");
-      flecha.style.transform = `rotate(${direccion}deg)`;
-      if (viento <= 20) flecha.style.background = '#22c55e';
-      else if (viento <= 30) flecha.style.background = '#facc15';
-      else flecha.style.background = '#ef4444';
-
-      document.getElementById("direccionTexto").textContent = `Viento desde el ${gradosACardinal(direccion)} (${direccion}°)`;
-
-      const labels = data.list.slice(0, 8).map(i => new Date(i.dt_txt).getHours() + 'h');
-      const vientoData = data.list.slice(0, 8).map(i => i.wind.speed);
-
-      if (chart !== null) {
-        chart.destroy();
-      }
-
-      chart = new Chart(document.getElementById("forecastChart"), {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Viento (km/h)',
-            data: vientoData,
-            borderColor: '#0ea5e9',
-            borderWidth: 2,
-            fill: false,
-            tension: 0.3
-          }]
-        },
-        options: {
-          plugins: {
-            legend: { labels: { color: '#e2e8f0' } }
-          },
-          scales: {
-            x: { ticks: { color: '#e2e8f0' } },
-            y: { ticks: { color: '#e2e8f0' } }
-          },
-          responsive: true,
-          maintainAspectRatio: false
-        }
-      });
-    }
-
-    window.onload = getWeather;
+    // Solo de prueba: ejemplo de valores
+    document.getElementById('tempValue').textContent = '17 °C';
+    document.getElementById('windValue').textContent = '14 km/h';
+    document.getElementById('sunValue').textContent = '06:14 / 20:39';
   </script>
 </body>
 </html>
-
