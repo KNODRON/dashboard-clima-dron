@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>PANEL TÁCTICO PARA VUELO RPA</title>
+  <title>¿Volar o no volar? | Clima táctico para RPA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -16,11 +16,14 @@
     .container {
       max-width: 1000px;
       margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
     .title {
       text-align: center;
       font-size: 26px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       color: #7dd3fc;
     }
     .info-box {
@@ -28,7 +31,6 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 0 10px #0ea5e9;
-      margin-bottom: 20px;
     }
     .status {
       font-weight: bold;
@@ -38,12 +40,13 @@
     .yellow { color: #facc15; }
     .red { color: #ef4444; }
     select {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       padding: 8px;
       background: #1e293b;
       color: #e2e8f0;
       border: 1px solid #334155;
       border-radius: 6px;
+      width: 100%;
     }
     img.icono {
       width: 48px;
@@ -53,18 +56,27 @@
       background-color: #1e293b;
       border-radius: 10px;
       padding: 10px;
+      width: 100% !important;
+      height: auto !important;
     }
     .nota-legal {
       font-size: 10px;
       text-align: right;
       color: #6b7280;
-      margin-top: 30px;
+    }
+    @media screen and (max-width: 600px) {
+      .title {
+        font-size: 20px;
+      }
+      .status {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="title">🛰️ PANEL TÁCTICO PARA VUELO RPA</div>
+    <div class="title">¿Volar o no volar?</div>
 
     <label for="ciudad">Selecciona ubicación:</label>
     <select id="ciudad" onchange="getWeather()">
@@ -76,10 +88,10 @@
     </select>
 
     <div class="info-box" id="weatherInfo">Cargando datos...</div>
-    <canvas id="forecastChart" height="100"></canvas>
+    <canvas id="forecastChart"></canvas>
 
     <div class="nota-legal">
-      ⚠️ este panel es una herramienta de apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
+      ⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
     </div>
   </div>
 
@@ -155,7 +167,9 @@
           scales: {
             x: { ticks: { color: '#e2e8f0' } },
             y: { ticks: { color: '#e2e8f0' } }
-          }
+          },
+          responsive: true,
+          maintainAspectRatio: false
         }
       });
     }
