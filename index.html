@@ -78,19 +78,22 @@
       color: #6b7280;
       margin-top: 30px;
     }
-    .popup {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1f2937;
-      padding: 15px 25px;
+    .btn-pro {
+      display: block;
+      margin: 30px auto 0;
+      padding: 10px 20px;
+      font-family: 'Orbitron', sans-serif;
+      background: #0ea5e9;
+      color: #0f1115;
+      border: none;
       border-radius: 8px;
-      box-shadow: 0 0 10px #0ea5e9;
-      font-size: 14px;
-      color: #e2e8f0;
-      display: none;
-      z-index: 9999;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 6px #0ea5e9;
+      transition: background 0.3s;
+    }
+    .btn-pro:hover {
+      background: #38bdf8;
     }
   </style>
 </head>
@@ -123,12 +126,12 @@
       <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value" id="windDirValue">-- °</div></div>
     </div>
 
+    <button class="btn-pro" onclick="alert('Función PRO en desarrollo...')">✨ Probar versión PRO</button>
+
     <div class="nota-legal">
       ⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
     </div>
   </div>
-
-  <div id="popup" class="popup">✅ Aplicación instalada correctamente</div>
 
   <script>
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
@@ -174,17 +177,8 @@
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
-        .then(() => {
-          console.log("✅ Service Worker registrado");
-          mostrarPopup();
-        })
+        .then(() => console.log("✅ Service Worker registrado"))
         .catch(err => console.error("❌ Error registrando Service Worker:", err));
-    }
-
-    function mostrarPopup() {
-      const popup = document.getElementById("popup");
-      popup.style.display = "block";
-      setTimeout(() => popup.style.display = "none", 4000);
     }
   </script>
 </body>
