@@ -77,6 +77,36 @@
         <div class="card-title">Salida / Puesta</div>
         <div class="card-value" id="sunValue">-- : --</div>
       </div>
+      <div class="card">
+        <div class="card-icon">🌧️</div>
+        <div class="card-title">Lluvia</div>
+        <div class="card-value" id="rainValue">-- %</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">☁️</div>
+        <div class="card-title">Nubosidad</div>
+        <div class="card-value" id="cloudValue">-- %</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌫️</div>
+        <div class="card-title">Visibilidad</div>
+        <div class="card-value" id="visibilityValue">-- km</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🛰️</div>
+        <div class="card-title">Satélites</div>
+        <div class="card-value" id="satsValue">--</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧲</div>
+        <div class="card-title">Índice KP</div>
+        <div class="card-value" id="kpValue">--</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧭</div>
+        <div class="card-title">Dirección</div>
+        <div class="card-value" id="windDirValue">-- °</div>
+      </div>
     </div>
 
     <div class="nota-legal">
@@ -89,6 +119,12 @@
     document.getElementById('tempValue').textContent = '17 °C';
     document.getElementById('windValue').textContent = '14 km/h';
     document.getElementById('sunValue').textContent = '06:14 / 20:39';
+    document.getElementById('rainValue').textContent = '12 %';
+    document.getElementById('cloudValue').textContent = '35 %';
+    document.getElementById('visibilityValue').textContent = '10 km';
+    document.getElementById('satsValue').textContent = '17';
+    document.getElementById('kpValue').textContent = '2';
+    document.getElementById('windDirValue').textContent = 'NE (45°)';
   </script>
 </body>
 </html>
