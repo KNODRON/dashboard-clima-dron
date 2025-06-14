@@ -83,6 +83,7 @@
       <option value="Curacaví,CL">Curacaví</option>
       <option value="San Fabian de Alico,CL">San Fabian de Alico</option>
       <option value="Chillan,CL">Chillan</option>
+      <option value="Casablanca,CL">Casablanca</option>
       <option value="Arica,CL">Arica</option>
       <option value="Punta Arenas,CL">Punta Arenas</option>
     </select>
@@ -158,8 +159,8 @@
           const sunrise = new Date(data.sys.sunrise * 1000);
           const sunset = new Date(data.sys.sunset * 1000);
           document.getElementById('sunValue').textContent =
-            sunrise.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' / ' +
-            sunset.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            sunrise.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) + ' / ' +
+            sunset.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         })
         .catch(err => {
           console.error('Error al obtener clima:', err);
