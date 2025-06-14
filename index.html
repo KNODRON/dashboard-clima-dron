@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>¿Volar o no volar?| Monitorea. Evalúa. Vuela</title>
+  <title>¿Volar o no volar? | Clima táctico para RPA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -52,6 +52,33 @@
       width: 48px;
       vertical-align: middle;
     }
+    .brujula-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+    .brujula {
+      width: 100px;
+      height: 100px;
+      border: 4px solid #334155;
+      border-radius: 50%;
+      position: relative;
+    }
+    .flecha {
+      width: 4px;
+      height: 40px;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform-origin: bottom center;
+    }
+    .nota-legal {
+      font-size: 10px;
+      text-align: right;
+      color: #6b7280;
+    }
     .chart-container {
       position: relative;
       width: 100%;
@@ -63,11 +90,6 @@
       background-color: #1e293b;
       border-radius: 10px;
       padding: 10px;
-    }
-    .nota-legal {
-      font-size: 10px;
-      text-align: right;
-      color: #6b7280;
     }
     @media screen and (max-width: 600px) {
       .title {
@@ -85,18 +107,25 @@
 <body>
   <div class="container">
     <div class="title">¿VOLAR O NO VOLAR?</div>
-     <div class="title">Monitorea. Evalúa. Vuela?</div>
+    <div class="title">Monitorea. Evalúa. Vuela</div>
 
     <label for="ciudad">Selecciona ubicación:</label>
     <select id="ciudad" onchange="getWeather()">
       <option value="Santiago,CL">Santiago Centro</option>
       <option value="Cerrillos,CL">Cerrillos</option>
+      <option value="Curacaví,CL">Curacaví</option>
       <option value="San Fabian de Alico,CL">San Fabian de Alico</option>
       <option value="Chillan,CL">Chillan</option>
       <option value="Punta Arenas,CL">Punta Arenas</option>
     </select>
 
     <div class="info-box" id="weatherInfo">Cargando datos...</div>
+    <div class="brujula-container">
+      <div class="brujula">
+        <div id="flechaViento" class="flecha"></div>
+      </div>
+      <p id="direccionTexto"></p>
+    </div>
     <div class="chart-container">
       <canvas id="forecastChart"></canvas>
     </div>
@@ -110,6 +139,11 @@
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
     let chart = null;
 
+    function gradosACardinal(deg) {
+      const direcciones = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+      return direcciones[Math.round(deg / 45) % 8];
+    }
+
     async function getWeather() {
       const ciudad = document.getElementById('ciudad').value;
       const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${ciudad}&limit=1&appid=${API_KEY}`);
@@ -121,6 +155,7 @@
 
       const current = data.list[0];
       const viento = current.wind.speed;
+      const direccion = current.wind.deg;
       const lluvia = current.pop * 100;
       const nubosidad = current.clouds.all;
       const visibilidad = current.visibility / 1000;
@@ -145,11 +180,20 @@
         <p><strong>Hora del pronóstico:</strong> ${horaPronostico}</p>
         <p><strong>Temperatura:</strong> ${temp.toFixed(1)} °C</p>
         <p><strong>Viento:</strong> ${viento} km/h</p>
+        <p><strong>Dirección del viento:</strong> ${direccion}° (${gradosACardinal(direccion)})</p>
         <p><strong>Lluvia (probabilidad):</strong> ${lluvia.toFixed(1)}%</p>
         <p><strong>Nubosidad:</strong> ${nubosidad}%</p>
         <p><strong>Visibilidad:</strong> ${visibilidad} km</p>
         <p>${status}</p>
       `;
+
+      const flecha = document.getElementById("flechaViento");
+      flecha.style.transform = `rotate(${direccion}deg)`;
+      if (viento <= 20) flecha.style.background = '#22c55e';
+      else if (viento <= 30) flecha.style.background = '#facc15';
+      else flecha.style.background = '#ef4444';
+
+      document.getElementById("direccionTexto").textContent = `Viento desde el ${gradosACardinal(direccion)} (${direccion}°)`;
 
       const labels = data.list.slice(0, 8).map(i => new Date(i.dt_txt).getHours() + 'h');
       const vientoData = data.list.slice(0, 8).map(i => i.wind.speed);
@@ -189,3 +233,4 @@
   </script>
 </body>
 </html>
+
