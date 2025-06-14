@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>¿VOLAR O NO VOLAR? | Clima táctico para RPA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
@@ -18,9 +19,16 @@
     }
     .title {
       text-align: center;
+      color: #7dd3fc;
+    }
+    .title-main {
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .title-sub {
       font-size: 28px;
       margin-bottom: 20px;
-      color: #7dd3fc;
     }
     label, select {
       display: block;
@@ -73,8 +81,8 @@
 </head>
 <body>
   <div class="container">
-    <div class="title">¿VOLAR O NO VOLAR?</div>
-    <div class="title">Monitorea. Evalúa. Vuela</div>
+    <div class="title title-main">¿VOLAR O NO VOLAR?</div>
+    <div class="title title-sub">Monitorea. Evalúa. Vuela</div>
 
     <label for="ciudad">Selecciona ubicación:</label>
     <select id="ciudad" onchange="obtenerDatosClimaticos()">
