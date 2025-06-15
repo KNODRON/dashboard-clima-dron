@@ -136,7 +136,7 @@
       <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value" id="tempValue">-- °C</div></div>
       <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value" id="windValue">-- km/h</div></div>
       <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value" id="sunValue">-- : --</div></div>
-      <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value" id="rainValue">-- %</div></div>
+      <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value" id="rainValue">-- mm</div></div>
       <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value" id="cloudValue">-- %</div></div>
       <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value" id="visibilityValue">-- km</div></div>
       <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value" id="satsValue">--</div></div>
@@ -164,7 +164,7 @@
           document.getElementById('tempValue').textContent = data.main.temp.toFixed(1) + ' °C';
           document.getElementById('windValue').textContent = data.wind.speed + ' km/h';
           document.getElementById('cloudValue').textContent = data.clouds.all + ' %';
-          document.getElementById('rainValue').textContent = (data.rain?.['1h'] || 0) + ' %';
+          document.getElementById('rainValue').textContent = (data.rain?.['1h'] || 0) + ' mm';
           document.getElementById('visibilityValue').textContent = (data.visibility / 1000).toFixed(1) + ' km';
           document.getElementById('windDirValue').textContent = data.wind.deg + ' °';
 
@@ -175,14 +175,14 @@
             sunset.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
           const viento = data.wind.speed;
-          const lluvia = (data.rain?.['1h'] || 0);
+          const lluvia = (data.rain?.['1h'] || 0); // mm
           const visibilidad = data.visibility / 1000;
 
           const estadoVuelo = document.getElementById("estadoVuelo");
-          if (viento > 30 || lluvia > 30 || visibilidad < 5) {
+          if (viento > 30 || lluvia > 1 || visibilidad < 5) {
             estadoVuelo.className = "status-card status-bad";
             estadoVuelo.textContent = "⛔ No apto para volar";
-          } else if (viento > 20 || lluvia > 10) {
+          } else if (viento > 20 || lluvia > 0.2) {
             estadoVuelo.className = "status-card status-warning";
             estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
           } else {
