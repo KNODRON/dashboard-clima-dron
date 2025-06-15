@@ -125,10 +125,9 @@
       <option value="Santiago,CL">Santiago Centro</option>
       <option value="Cerrillos,CL">Cerrillos</option>
       <option value="Curacaví,CL">Curacaví</option>
-      <option value="San Fabian de Alico,CL">San Fabian de Alico</option>
+      <option value="lat=-36.5586&lon=-71.4817">San Fabián de Alico</option>
       <option value="Chillan,CL">Chillan</option>
       <option value="Casablanca,CL">Casablanca</option>
-      <option value="Lampa,CL">Lampa</option>
       <option value="Arica,CL">Arica</option>
       <option value="Punta Arenas,CL">Punta Arenas</option>
     </select>
@@ -159,7 +158,14 @@
 
     function obtenerDatosClimaticos() {
       const ciudad = document.getElementById('ciudad').value;
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&units=metric&lang=es&appid=${API_KEY}`)
+      let url = '';
+      if (ciudad.includes('lat=')) {
+        url = `https://api.openweathermap.org/data/2.5/weather?${ciudad}&units=metric&lang=es&appid=${API_KEY}`;
+      } else {
+        url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&units=metric&lang=es&appid=${API_KEY}`;
+      }
+
+      fetch(url)
         .then(response => response.json())
         .then(data => {
           document.getElementById('tempValue').textContent = data.main.temp.toFixed(1) + ' °C';
@@ -220,3 +226,4 @@
   </script>
 </body>
 </html>
+
