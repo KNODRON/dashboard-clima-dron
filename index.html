@@ -178,7 +178,6 @@
     function obtenerDatosClimaticos() {
       const ciudad = document.getElementById('ciudad').value;
       const [lat, lon] = ciudad.split(',');
-
       fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
         .then(response => response.json())
         .then(data => {
@@ -210,9 +209,7 @@
             estadoVuelo.textContent = "✅ Apto para volar";
           }
 
-          // También actualizar el pronóstico al cambiar ciudad
-          const grid = document.getElementById('forecastGrid');
-          if (grid.style.display === 'grid') {
+          if (document.getElementById('forecastGrid').style.display === 'grid') {
             obtenerPronostico(lat, lon);
           }
         });
