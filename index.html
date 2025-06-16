@@ -167,7 +167,7 @@
           document.getElementById('panelClima').innerHTML = `
             <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value">${data.main.temp.toFixed(1)} °C</div></div>
             <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${data.wind.speed} km/h</div></div>
-            <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(data.sys.sunrise * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} / ${new Date(data.sys.sunset * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div></div>
+            <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(data.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})} / ${new Date(data.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})}</div></div>
             <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value">${(data.rain?.['1h'] || 0)} mm</div></div>
             <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value">${data.clouds.all} %</div></div>
             <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value">${(data.visibility / 1000).toFixed(1)} km</div></div>
