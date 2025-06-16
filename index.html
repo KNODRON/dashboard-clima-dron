@@ -213,7 +213,6 @@
         const kpData = await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json').then(r => r.json());
         const ultimo = kpData[kpData.length - 1];
         document.getElementById('kpValue').textContent = ultimo.kp_index.toFixed(1);
-
       } catch (e) {
         document.getElementById('kpValue').textContent = 'N/A';
       }
