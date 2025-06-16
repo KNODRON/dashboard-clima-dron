@@ -114,7 +114,7 @@
       background-color: #ef4444;
     }
     .forecast-grid {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 10px;
       margin-top: 20px;
@@ -175,67 +175,72 @@
   <script>
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
 
-    function obtenerDatosClimaticos() {
+    async function obtenerDatosClimaticos() {
       const ciudad = document.getElementById('ciudad').value;
       const [lat, lon] = ciudad.split(',');
-      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('panelClima').innerHTML = `
-            <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value">${data.main.temp.toFixed(1)} °C</div></div>
-            <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${data.wind.speed} km/h</div></div>
-            <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(data.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})} / ${new Date(data.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})}</div></div>
-            <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value">${(data.rain?.['1h'] || 0)} mm</div></div>
-            <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value">${data.clouds.all} %</div></div>
-            <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value">${(data.visibility / 1000).toFixed(1)} km</div></div>
-            <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value">${Math.floor(Math.random() * 8) + 14}</div></div>
-            <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">--</div></div>
-            <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value">${data.wind.deg} °</div></div>
-          `;
 
-          const viento = data.wind.speed;
-          const lluvia = (data.rain?.['1h'] || 0);
-          const visibilidad = data.visibility / 1000;
+      try {
+        const clima = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`).then(r => r.json());
 
-          const estadoVuelo = document.getElementById("estadoVuelo");
-          if (viento > 30 || lluvia > 1 || visibilidad < 5) {
-            estadoVuelo.className = "status-card status-bad";
-            estadoVuelo.textContent = "⛔ No apto para volar";
-          } else if (viento > 20 || lluvia > 0.2) {
-            estadoVuelo.className = "status-card status-warning";
-            estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
-          } else {
-            estadoVuelo.className = "status-card status-ok";
-            estadoVuelo.textContent = "✅ Apto para volar";
-          }
-        });
+        document.getElementById('panelClima').innerHTML = `
+          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
+          <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${clima.wind.speed} km/h</div></div>
+          <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(clima.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})} / ${new Date(clima.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})}</div></div>
+          <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value">${(clima.rain?.['1h'] || 0)} mm</div></div>
+          <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value">${clima.clouds.all} %</div></div>
+          <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value">${(clima.visibility / 1000).toFixed(1)} km</div></div>
+          <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value">${Math.floor(Math.random() * 8) + 14}</div></div>
+          <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">Cargando...</div></div>
+          <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value">${clima.wind.deg} °</div></div>
+        `;
 
-      fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
-        .then(response => response.json())
-        .then(data => {
-          const ultimo = data[data.length - 1];
-          const kp = ultimo.kp_index;
-          document.getElementById('kpValue').textContent = kp.toFixed(1);
-        })
-        .catch(() => {
-          document.getElementById('kpValue').textContent = 'N/A';
-        });
+        const viento = clima.wind.speed;
+        const lluvia = (clima.rain?.['1h'] || 0);
+        const visibilidad = clima.visibility / 1000;
+        const estadoVuelo = document.getElementById("estadoVuelo");
+
+        if (viento > 30 || lluvia > 1 || visibilidad < 5) {
+          estadoVuelo.className = "status-card status-bad";
+          estadoVuelo.textContent = "⛔ No apto para volar";
+        } else if (viento > 20 || lluvia > 0.2) {
+          estadoVuelo.className = "status-card status-warning";
+          estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
+        } else {
+          estadoVuelo.className = "status-card status-ok";
+          estadoVuelo.textContent = "✅ Apto para volar";
+        }
+
+        const kpData = await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json').then(r => r.json());
+        const ultimo = kpData[kpData.length - 1];
+        const kp = ultimo.kp_index;
+        document.getElementById('kpValue').textContent = kp.toFixed(1);
+
+        const grid = document.getElementById('forecastGrid');
+        if (grid.style.display === 'grid') {
+          mostrarPronostico5Dias();
+        }
+      } catch (e) {
+        document.getElementById('kpValue').textContent = 'N/A';
+      }
     }
 
     function mostrarPronostico5Dias() {
+      const grid = document.getElementById('forecastGrid');
+      const visible = grid.style.display === 'grid';
+      grid.style.display = visible ? 'none' : 'grid';
+      if (visible) return;
+
       const ciudad = document.getElementById('ciudad').value;
       const [lat, lon] = ciudad.split(',');
+
       fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
         .then(res => res.json())
         .then(data => {
-          const grid = document.getElementById('forecastGrid');
           grid.innerHTML = '';
           const dias = {};
           data.list.forEach(item => {
             const fecha = item.dt_txt.split(' ')[0];
-            if (!dias[fecha]) {
-              dias[fecha] = item;
-            }
+            if (!dias[fecha]) dias[fecha] = item;
           });
           Object.keys(dias).slice(0, 5).forEach(key => {
             const d = dias[key];
@@ -256,3 +261,4 @@
   </script>
 </body>
 </html>
+
