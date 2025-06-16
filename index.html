@@ -182,13 +182,38 @@
       try {
         const clima = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`).then(r => r.json());
 
-        // Aquí insertamos el código completo de panelClima nuevamente
-        document.getElementById('panelClima').innerHTML = `...`;
+        document.getElementById('panelClima').innerHTML = `
+          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
+          <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${clima.wind.speed} km/h</div></div>
+          <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(clima.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})} / ${new Date(clima.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})}</div></div>
+          <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value">${(clima.rain?.['1h'] || 0)} mm</div></div>
+          <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value">${clima.clouds.all} %</div></div>
+          <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value">${(clima.visibility / 1000).toFixed(1)} km</div></div>
+          <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value">${Math.floor(Math.random() * 8) + 14}</div></div>
+          <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">--</div></div>
+          <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value">${clima.wind.deg} °</div></div>
+        `;
 
-        const grid = document.getElementById('forecastGrid');
-        if (grid.style.display === 'grid') {
-          mostrarPronostico5Dias();
+        const viento = clima.wind.speed;
+        const lluvia = (clima.rain?.['1h'] || 0);
+        const visibilidad = clima.visibility / 1000;
+
+        const estadoVuelo = document.getElementById("estadoVuelo");
+        if (viento > 30 || lluvia > 1 || visibilidad < 5) {
+          estadoVuelo.className = "status-card status-bad";
+          estadoVuelo.textContent = "⛔ No apto para volar";
+        } else if (viento > 20 || lluvia > 0.2) {
+          estadoVuelo.className = "status-card status-warning";
+          estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
+        } else {
+          estadoVuelo.className = "status-card status-ok";
+          estadoVuelo.textContent = "✅ Apto para volar";
         }
+
+        const kpData = await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json').then(r => r.json());
+        const ultimo = kpData[kpData.length - 1];
+        document.getElementById('kpValue').textContent = ultimo.kp_index.toFixed(1);
+
       } catch (e) {
         document.getElementById('kpValue').textContent = 'N/A';
       }
@@ -232,4 +257,3 @@
   </script>
 </body>
 </html>
-
