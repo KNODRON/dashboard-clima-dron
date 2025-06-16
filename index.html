@@ -80,7 +80,7 @@
     }
     .btn-pro {
       display: block;
-      margin: 30px auto 0;
+      margin: 20px auto 0;
       padding: 10px 20px;
       font-family: 'Orbitron', sans-serif;
       background: #0ea5e9;
@@ -112,6 +112,20 @@
     }
     .status-bad {
       background-color: #ef4444;
+    }
+    .forecast-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .forecast-card {
+      background: #1e293b;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 4px #0ea5e9;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -145,6 +159,9 @@
     </select>
 
     <div class="grid-panel" id="panelClima"></div>
+
+    <button class="btn-pro" onclick="mostrarPronostico5Dias()">📆 Pronóstico 5 días</button>
+    <div class="forecast-grid" id="forecastGrid"></div>
 
     <div id="estadoVuelo" class="status-card">Evaluando condiciones...</div>
 
@@ -202,6 +219,34 @@
         })
         .catch(() => {
           document.getElementById('kpValue').textContent = 'N/A';
+        });
+    }
+
+    function mostrarPronostico5Dias() {
+      const grid = document.getElementById('forecastGrid');
+      const visible = grid.style.display === 'grid';
+      if (visible) {
+        grid.style.display = 'none';
+        return;
+      }
+      const ciudad = document.getElementById('ciudad').value;
+      const [lat, lon] = ciudad.split(',');
+      fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&units=metric&lang=es&appid=${API_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+          const dias = data.daily.slice(0, 5);
+          grid.innerHTML = dias.map(d => {
+            const fecha = new Date(d.dt * 1000).toLocaleDateString('es-CL', { weekday: 'short' });
+            return `
+              <div class="forecast-card">
+                <div><strong>${fecha}</strong></div>
+                <div>${d.weather[0].description}</div>
+                <div>🌡️ ${d.temp.day.toFixed(1)} °C</div>
+                <div>💨 ${d.wind_speed} km/h</div>
+              </div>
+            `;
+          }).join('');
+          grid.style.display = 'grid';
         });
     }
 
