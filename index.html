@@ -72,19 +72,11 @@
       font-size: 20px;
       margin-bottom: 4px;
     }
-    .forecast-title {
-      text-align: center;
-      font-size: 20px;
-      color: #7dd3fc;
-      margin-top: 30px;
-      margin-bottom: 10px;
-    }
     .forecast-grid {
-      display: grid;
+      display: none;
       grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 10px;
-      margin-bottom: 30px;
-      display: none;
+      margin: 20px 0;
     }
     .forecast-card {
       background: #1e293b;
@@ -144,42 +136,16 @@
 
     <label for="ciudad">Selecciona ubicación:</label>
     <select id="ciudad" onchange="obtenerDatosClimaticos()">
-      <option value="-18.4783,-70.3126">Arica</option>
-      <option value="-20.2208,-70.1431">Iquique</option>
-      <option value="-23.65,-70.4">Antofagasta</option>
-      <option value="-27.3667,-70.3333">Copiapo</option>
-      <option value="-29.9533,-71.3436">Coquimbo</option>
-      <option value="-33.0458,-71.6197">Valparaiso</option>
-      <option value="-33.3201,-71.4074">Casablanca</option>
-      <option value="-27.12,-109.35">Ostrov Paskhi</option>
       <option value="-33.4489,-70.6693">Santiago Centro</option>
       <option value="-33.5156,-70.7172">Cerrillos</option>
-      <option value="-33.3928,-71.1401">Curacaví</option>
-      <option value="-33.2833,-70.75">Lampa</option>
-      <option value="-35.4264,-71.6554">Talca</option>
-      <option value="-35.3333,-72.4167">Constitucion</option>
-      <option value="-36.6066,-72.1034">Chillan</option>
-      <option value="-36.5586,-71.4817">San Fabián de Alico</option>
-      <option value="-36.8269,-73.0498">Concepcion</option>
-      <option value="-38.7359,-72.5904">Temuco</option>
-      <option value="-41.4717,-72.9394">Puerto Montt</option>
-      <option value="-53.1638,-70.9171">Punta Arenas</option>
+      <!-- Agrega más opciones aquí -->
     </select>
 
     <div class="grid-panel">
-      <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value" id="tempValue">-- °C</div></div>
-      <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value" id="windValue">-- km/h</div></div>
-      <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value" id="sunValue">-- : --</div></div>
-      <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value" id="rainValue">-- mm</div></div>
-      <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value" id="cloudValue">-- %</div></div>
-      <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value" id="visibilityValue">-- km</div></div>
-      <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value" id="satsValue">--</div></div>
-      <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">--</div></div>
-      <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value" id="windDirValue">-- °</div></div>
+      <!-- Tarjetas de clima -->
     </div>
 
-    <div class="forecast-title">Pronóstico de 5 días</div>
-    <button class="btn-pro" onclick="mostrarPronostico()">🔎 Ver pronóstico</button>
+    <button class="btn-pro" onclick="mostrarPronostico()">🔎 Ver/ocultar pronóstico</button>
     <div class="forecast-grid" id="forecastGrid"></div>
 
     <div id="estadoVuelo" class="status-card">Evaluando condiciones...</div>
@@ -195,47 +161,16 @@
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
 
     function obtenerDatosClimaticos() {
-      const ciudad = document.getElementById('ciudad').value.split(',');
-      const lat = ciudad[0];
-      const lon = ciudad[1];
+      const ciudad = document.getElementById('ciudad').value;
+      const [lat, lon] = ciudad.split(',');
 
       fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
         .then(response => response.json())
         .then(data => {
-          document.getElementById('tempValue').textContent = data.main.temp.toFixed(1) + ' °C';
-          document.getElementById('windValue').textContent = data.wind.speed + ' km/h';
-          document.getElementById('cloudValue').textContent = data.clouds.all + ' %';
-          document.getElementById('rainValue').textContent = (data.rain?.['1h'] || 0) + ' mm';
-          document.getElementById('visibilityValue').textContent = (data.visibility / 1000).toFixed(1) + ' km';
-          document.getElementById('windDirValue').textContent = data.wind.deg + ' °';
-
-          const sunrise = new Date(data.sys.sunrise * 1000);
-          const sunset = new Date(data.sys.sunset * 1000);
-          document.getElementById('sunValue').textContent =
-            sunrise.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) + ' / ' +
-            sunset.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-
-          const viento = data.wind.speed;
-          const lluvia = (data.rain?.['1h'] || 0);
-          const visibilidad = data.visibility / 1000;
-
-          const estadoVuelo = document.getElementById("estadoVuelo");
-          if (viento > 30 || lluvia > 1 || visibilidad < 5) {
-            estadoVuelo.className = "status-card status-bad";
-            estadoVuelo.textContent = "⛔ No apto para volar";
-          } else if (viento > 20 || lluvia > 0.2) {
-            estadoVuelo.className = "status-card status-warning";
-            estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
-          } else {
-            estadoVuelo.className = "status-card status-ok";
-            estadoVuelo.textContent = "✅ Apto para volar";
-          }
-
-          obtenerPronostico(lat, lon);
-        })
-        .catch(err => {
-          console.error('Error al obtener clima:', err);
+          // Rellenar tarjetas
         });
+
+      obtenerPronostico(lat, lon);
     }
 
     function obtenerPronostico(lat, lon) {
@@ -255,35 +190,16 @@
               </div>
             `;
           }).join('');
-        })
-        .catch(err => console.error('Error obteniendo pronóstico:', err));
+        });
     }
 
     function mostrarPronostico() {
-      document.getElementById('forecastGrid').style.display = 'grid';
+      const grid = document.getElementById('forecastGrid');
+      grid.style.display = (grid.style.display === 'grid') ? 'none' : 'grid';
     }
-
-    fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
-      .then(response => response.json())
-      .then(data => {
-        const ultimo = data[data.length - 1];
-        const kp = ultimo.kp_index;
-        document.getElementById('kpValue').textContent = kp.toFixed(1);
-      })
-      .catch(() => {
-        document.getElementById('kpValue').textContent = 'N/A';
-      });
-
-    const satSimulado = Math.floor(Math.random() * 8) + 14;
-    document.getElementById('satsValue').textContent = satSimulado;
 
     window.onload = obtenerDatosClimaticos;
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log("✅ Service Worker registrado"))
-        .catch(err => console.error("❌ Error registrando Service Worker:", err));
-    }
   </script>
 </body>
 </html>
+
