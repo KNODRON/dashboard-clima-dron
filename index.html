@@ -57,6 +57,7 @@
       border-radius: 10px;
       text-align: center;
       box-shadow: 0 0 6px #0ea5e9;
+      cursor: default;
     }
     .card-title {
       font-size: 12px;
@@ -113,6 +114,34 @@
     .status-bad {
       background-color: #ef4444;
     }
+    .delitos-modal {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #0ea5e9;
+      z-index: 1000;
+      max-width: 90%;
+      overflow-x: auto;
+    }
+    .delitos-modal table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .delitos-modal th, .delitos-modal td {
+      padding: 8px;
+      border: 1px solid #334155;
+      text-align: center;
+    }
+    .delitos-modal th {
+      background-color: #0ea5e9;
+      color: #0f1115;
+    }
   </style>
 </head>
 <body>
@@ -154,6 +183,7 @@
       <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value" id="satsValue">--</div></div>
       <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">--</div></div>
       <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value" id="windDirValue">-- °</div></div>
+      <div class="card" onclick="mostrarDelitos()"><div class="card-icon">🚨</div><div class="card-title">Nivel de Delitos</div><div class="card-value">📊 Ver</div></div>
     </div>
 
     <div id="estadoVuelo" class="status-card">Evaluando condiciones...</div>
@@ -164,6 +194,8 @@
       ⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
     </div>
   </div>
+
+  <div id="modalDelitos" class="delitos-modal"></div>
 
   <script>
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
@@ -194,7 +226,7 @@
             sunset.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
           const viento = data.wind.speed;
-          const lluvia = (data.rain?.['1h'] || 0); // mm
+          const lluvia = (data.rain?.['1h'] || 0);
           const visibilidad = data.visibility / 1000;
 
           const estadoVuelo = document.getElementById("estadoVuelo");
@@ -211,6 +243,30 @@
         })
         .catch(err => {
           console.error('Error al obtener clima:', err);
+        });
+    }
+
+    function mostrarDelitos() {
+      fetch('delitos_comunas_2023.csv')
+        .then(response => response.text())
+        .then(csv => {
+          const filas = csv.trim().split('\n');
+          let tablaHTML = '<table><tr><th>Año</th><th>Comuna</th><th>Total</th></tr>';
+          for (let i = 1; i < filas.length; i++) {
+            const cols = filas[i].split(',');
+            tablaHTML += `<tr><td>${cols[0]}</td><td>${cols[1]}</td><td>${cols[2]}</td></tr>`;
+          }
+          tablaHTML += '</table>';
+          const modal = document.getElementById('modalDelitos');
+          modal.innerHTML = tablaHTML;
+          modal.style.display = 'block';
+
+          modal.addEventListener('click', () => {
+            modal.style.display = 'none';
+          });
+        })
+        .catch(err => {
+          console.error('Error cargando CSV de delitos:', err);
         });
     }
 
@@ -238,4 +294,3 @@
   </script>
 </body>
 </html>
-
