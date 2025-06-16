@@ -209,6 +209,12 @@
             estadoVuelo.className = "status-card status-ok";
             estadoVuelo.textContent = "✅ Apto para volar";
           }
+
+          // También actualizar el pronóstico al cambiar ciudad
+          const grid = document.getElementById('forecastGrid');
+          if (grid.style.display === 'grid') {
+            obtenerPronostico(lat, lon);
+          }
         });
 
       fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
@@ -247,13 +253,9 @@
       const grid = document.getElementById('forecastGrid');
       const ciudad = document.getElementById('ciudad').value;
       const [lat, lon] = ciudad.split(',');
-
-      if (grid.style.display === 'grid') {
-        grid.style.display = 'none';
-      } else {
-        grid.style.display = 'grid';
-        obtenerPronostico(lat, lon);
-      }
+      const visible = grid.style.display === 'grid';
+      grid.style.display = visible ? 'none' : 'grid';
+      if (!visible) obtenerPronostico(lat, lon);
     }
 
     window.onload = obtenerDatosClimaticos;
