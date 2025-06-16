@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="theme-color" content="#0ea5e9" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0ea5e9">
   <title>¿VOLAR O NO VOLAR? | Clima táctico para RPA</title>
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
       background: url('fondo.jpg') no-repeat center center fixed;
       background-size: cover;
+      position: relative;
       margin: 0;
       padding: 0;
-      position: relative;
     }
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: -1;
     }
     .container {
       max-width: 1000px;
       margin: auto;
-      padding: 20px;
       background-color: rgba(15, 17, 21, 0.85);
-      border-radius: 12px;
+      border-radius: 10px;
+      padding: 20px;
       color: #e2e8f0;
     }
     .title {
@@ -46,8 +48,9 @@
     }
     label, select {
       display: block;
+      margin: auto;
       text-align: center;
-      margin: 0 auto 20px auto;
+      margin-bottom: 20px;
     }
     select {
       padding: 8px;
@@ -55,6 +58,7 @@
       color: #e2e8f0;
       border: 1px solid #334155;
       border-radius: 6px;
+      font-family: 'Orbitron', sans-serif;
     }
     .grid-panel {
       display: grid;
@@ -72,10 +76,57 @@
     .card-title {
       font-size: 12px;
       color: #94a3b8;
+      margin-bottom: 4px;
     }
     .card-value {
       font-size: 18px;
       font-weight: bold;
+      color: #e2e8f0;
+    }
+    .card-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .nota-legal {
+      font-size: 10px;
+      text-align: center;
+      color: #6b7280;
+      margin-top: 30px;
+    }
+    .btn-pro {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      font-family: 'Orbitron', sans-serif;
+      background: #0ea5e9;
+      color: #0f1115;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 6px #0ea5e9;
+      transition: background 0.3s;
+    }
+    .btn-pro:hover {
+      background: #38bdf8;
+    }
+    .status-card {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 15px;
+      border-radius: 12px;
+      color: #fff;
+    }
+    .status-ok {
+      background-color: #22c55e;
+    }
+    .status-warning {
+      background-color: #facc15;
+    }
+    .status-bad {
+      background-color: #ef4444;
     }
     .forecast-grid {
       display: none;
@@ -88,39 +139,8 @@
       padding: 10px;
       border-radius: 10px;
       text-align: center;
-      font-size: 12px;
       box-shadow: 0 0 4px #0ea5e9;
-    }
-    .status-card {
-      margin-top: 30px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      padding: 15px;
-      border-radius: 12px;
-      color: #fff;
-    }
-    .status-ok { background-color: #22c55e; }
-    .status-warning { background-color: #facc15; }
-    .status-bad { background-color: #ef4444; }
-    .btn-pro {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-weight: bold;
-      background: #0ea5e9;
-      color: #0f1115;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 0 6px #0ea5e9;
-    }
-    .btn-pro:hover { background: #38bdf8; }
-    .nota-legal {
-      font-size: 10px;
-      text-align: center;
-      color: #6b7280;
-      margin-top: 30px;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -133,8 +153,7 @@
     <select id="ciudad" onchange="obtenerDatosClimaticos()">
       <option value="-33.4489,-70.6693">Santiago Centro</option>
       <option value="-18.4783,-70.3126">Arica</option>
-      <option value="-53.1638,-70.9171">Punta Arenas</option>
-      <!-- Agrega más ciudades si quieres -->
+      <!-- otras ciudades aquí -->
     </select>
 
     <div class="grid-panel" id="panelClima"></div>
@@ -147,7 +166,7 @@
     <button class="btn-pro" onclick="alert('Función PRO en desarrollo...')">✨ Probar versión PRO</button>
 
     <div class="nota-legal">
-      ⚠️ Esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
+      ⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
     </div>
   </div>
 
@@ -158,39 +177,46 @@
       const ciudad = document.getElementById('ciudad').value;
       const [lat, lon] = ciudad.split(',');
 
-      const clima = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`).then(r => r.json());
+      try {
+        const clima = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`).then(r => r.json());
 
-      document.getElementById('panelClima').innerHTML = `
-        <div class="card"><div class="card-title">Temperatura</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
-        <div class="card"><div class="card-title">Viento</div><div class="card-value">${clima.wind.speed} km/h</div></div>
-        <div class="card"><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(clima.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour: '2-digit', minute: '2-digit', hour12: false})} / ${new Date(clima.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour: '2-digit', minute: '2-digit', hour12: false})}</div></div>
-        <div class="card"><div class="card-title">Lluvia</div><div class="card-value">${clima.rain?.['1h'] || 0} mm</div></div>
-        <div class="card"><div class="card-title">Nubosidad</div><div class="card-value">${clima.clouds.all} %</div></div>
-        <div class="card"><div class="card-title">Visibilidad</div><div class="card-value">${(clima.visibility / 1000).toFixed(1)} km</div></div>
-        <div class="card"><div class="card-title">Satélites</div><div class="card-value">${Math.floor(Math.random() * 8) + 14}</div></div>
-        <div class="card"><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">--</div></div>
-        <div class="card"><div class="card-title">Dirección</div><div class="card-value">${clima.wind.deg} °</div></div>
-      `;
+        console.log('Clima actual:', clima); // Debug
 
-      const viento = clima.wind.speed;
-      const lluvia = clima.rain?.['1h'] || 0;
-      const visibilidad = clima.visibility / 1000;
-      const estadoVuelo = document.getElementById("estadoVuelo");
+        document.getElementById('panelClima').innerHTML = `
+          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
+          <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${clima.wind.speed} km/h</div></div>
+          <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(clima.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})} / ${new Date(clima.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})}</div></div>
+          <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value">${(clima.rain?.['1h'] || 0)} mm</div></div>
+          <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value">${clima.clouds.all} %</div></div>
+          <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value">${(clima.visibility / 1000).toFixed(1)} km</div></div>
+          <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value">${Math.floor(Math.random() * 8) + 14}</div></div>
+          <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">--</div></div>
+          <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value">${clima.wind.deg} °</div></div>
+        `;
 
-      if (viento > 30 || lluvia > 1 || visibilidad < 5) {
-        estadoVuelo.className = "status-card status-bad";
-        estadoVuelo.textContent = "⛔ No apto para volar";
-      } else if (viento > 20 || lluvia > 0.2) {
-        estadoVuelo.className = "status-card status-warning";
-        estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
-      } else {
-        estadoVuelo.className = "status-card status-ok";
-        estadoVuelo.textContent = "✅ Apto para volar";
+        const viento = clima.wind.speed;
+        const lluvia = (clima.rain?.['1h'] || 0);
+        const visibilidad = clima.visibility / 1000;
+
+        const estadoVuelo = document.getElementById("estadoVuelo");
+        if (viento > 30 || lluvia > 1 || visibilidad < 5) {
+          estadoVuelo.className = "status-card status-bad";
+          estadoVuelo.textContent = "⛔ No apto para volar";
+        } else if (viento > 20 || lluvia > 0.2) {
+          estadoVuelo.className = "status-card status-warning";
+          estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
+        } else {
+          estadoVuelo.className = "status-card status-ok";
+          estadoVuelo.textContent = "✅ Apto para volar";
+        }
+
+        const kpData = await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json').then(r => r.json());
+        const ultimo = kpData[kpData.length - 1];
+        document.getElementById('kpValue').textContent = ultimo.kp_index.toFixed(1);
+      } catch (e) {
+        console.error('Error al obtener clima:', e);
+        document.getElementById('kpValue').textContent = 'N/A';
       }
-
-      const kp = await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json').then(r => r.json());
-      const ultimo = kp[kp.length - 1];
-      document.getElementById('kpValue').textContent = ultimo.kp_index.toFixed(1);
     }
 
     function mostrarPronostico5Dias() {
@@ -199,30 +225,37 @@
       grid.style.display = visible ? 'none' : 'grid';
       if (visible) return;
 
-      const [lat, lon] = document.getElementById('ciudad').value.split(',');
+      const ciudad = document.getElementById('ciudad').value;
+      const [lat, lon] = ciudad.split(',');
 
       fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
-        .then(r => r.json())
+        .then(res => res.json())
         .then(data => {
-          const diasUnicos = new Set();
+          console.log('Pronóstico:', data); // Debug
           grid.innerHTML = '';
-          for (const d of data.list) {
-            const fecha = new Date(d.dt * 1000);
+          const diasUnicos = new Set();
+
+          for (const item of data.list) {
+            const fecha = new Date(item.dt * 1000);
             const clave = fecha.toISOString().split('T')[0];
             if (!diasUnicos.has(clave)) {
               diasUnicos.add(clave);
               const diaNombre = fecha.toLocaleDateString('es-CL', { weekday: 'short' });
               grid.innerHTML += `
                 <div class="forecast-card">
-                  <strong>${diaNombre}</strong>
-                  <div>${d.weather[0].description}</div>
-                  <div>🌡️ ${d.main.temp.toFixed(1)} °C</div>
-                  <div>💨 ${d.wind.speed} km/h</div>
-                </div>`;
+                  <div><strong>${diaNombre}</strong></div>
+                  <div>${item.weather[0].description}</div>
+                  <div>🌡️ ${item.main.temp.toFixed(1)} °C</div>
+                  <div>💨 ${item.wind.speed} km/h</div>
+                </div>
+              `;
               if (diasUnicos.size === 5) break;
             }
           }
         });
     }
 
-    window.
+    window.onload = obtenerDatosClimaticos;
+  </script>
+</body>
+</html>
