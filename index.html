@@ -75,7 +75,7 @@
     }
     .nota-legal {
       font-size: 10px;
-      text-align: right;
+      text-align: center;
       color: #6b7280;
       margin-top: 30px;
     }
@@ -142,6 +142,12 @@
       background-color: #0ea5e9;
       color: #0f1115;
     }
+    .delitos-explicacion {
+      font-size: 12px;
+      margin-top: 12px;
+      color: #cbd5e1;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -183,7 +189,6 @@
       <div class="card"><div class="card-icon">🛰️</div><div class="card-title">Satélites</div><div class="card-value" id="satsValue">--</div></div>
       <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value" id="kpValue">--</div></div>
       <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value" id="windDirValue">-- °</div></div>
-      <div class="card" onclick="mostrarDelitos()"><div class="card-icon">🚨</div><div class="card-title">Nivel de Delitos</div><div class="card-value">📊 Ver</div></div>
     </div>
 
     <div id="estadoVuelo" class="status-card">Evaluando condiciones...</div>
@@ -194,103 +199,5 @@
       ⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
     </div>
   </div>
-
-  <div id="modalDelitos" class="delitos-modal"></div>
-
-  <script>
-    const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
-
-    function obtenerDatosClimaticos() {
-      const ciudad = document.getElementById('ciudad').value;
-      let url = '';
-      if (ciudad.includes('lat=')) {
-        url = `https://api.openweathermap.org/data/2.5/weather?${ciudad}&units=metric&lang=es&appid=${API_KEY}`;
-      } else {
-        url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&units=metric&lang=es&appid=${API_KEY}`;
-      }
-
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('tempValue').textContent = data.main.temp.toFixed(1) + ' °C';
-          document.getElementById('windValue').textContent = data.wind.speed + ' km/h';
-          document.getElementById('cloudValue').textContent = data.clouds.all + ' %';
-          document.getElementById('rainValue').textContent = (data.rain?.['1h'] || 0) + ' mm';
-          document.getElementById('visibilityValue').textContent = (data.visibility / 1000).toFixed(1) + ' km';
-          document.getElementById('windDirValue').textContent = data.wind.deg + ' °';
-
-          const sunrise = new Date(data.sys.sunrise * 1000);
-          const sunset = new Date(data.sys.sunset * 1000);
-          document.getElementById('sunValue').textContent =
-            sunrise.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) + ' / ' +
-            sunset.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-
-          const viento = data.wind.speed;
-          const lluvia = (data.rain?.['1h'] || 0);
-          const visibilidad = data.visibility / 1000;
-
-          const estadoVuelo = document.getElementById("estadoVuelo");
-          if (viento > 30 || lluvia > 1 || visibilidad < 5) {
-            estadoVuelo.className = "status-card status-bad";
-            estadoVuelo.textContent = "⛔ No apto para volar";
-          } else if (viento > 20 || lluvia > 0.2) {
-            estadoVuelo.className = "status-card status-warning";
-            estadoVuelo.textContent = "⚠️ Precaución: condiciones medias";
-          } else {
-            estadoVuelo.className = "status-card status-ok";
-            estadoVuelo.textContent = "✅ Apto para volar";
-          }
-        })
-        .catch(err => {
-          console.error('Error al obtener clima:', err);
-        });
-    }
-
-    function mostrarDelitos() {
-      fetch('delitos_comunas_2023.csv')
-        .then(response => response.text())
-        .then(csv => {
-          const filas = csv.trim().split('\n');
-          let tablaHTML = '<table><tr><th>Año</th><th>Comuna</th><th>Total</th></tr>';
-          for (let i = 1; i < filas.length; i++) {
-            const cols = filas[i].split(',');
-            tablaHTML += `<tr><td>${cols[0]}</td><td>${cols[1]}</td><td>${cols[2]}</td></tr>`;
-          }
-          tablaHTML += '</table>';
-          const modal = document.getElementById('modalDelitos');
-          modal.innerHTML = tablaHTML;
-          modal.style.display = 'block';
-
-          modal.addEventListener('click', () => {
-            modal.style.display = 'none';
-          });
-        })
-        .catch(err => {
-          console.error('Error cargando CSV de delitos:', err);
-        });
-    }
-
-    fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
-      .then(response => response.json())
-      .then(data => {
-        const ultimo = data[data.length - 1];
-        const kp = ultimo.kp_index;
-        document.getElementById('kpValue').textContent = kp.toFixed(1);
-      })
-      .catch(() => {
-        document.getElementById('kpValue').textContent = 'N/A';
-      });
-
-    const satSimulado = Math.floor(Math.random() * 8) + 14;
-    document.getElementById('satsValue').textContent = satSimulado;
-
-    window.onload = obtenerDatosClimaticos;
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log("✅ Service Worker registrado"))
-        .catch(err => console.error("❌ Error registrando Service Worker:", err));
-    }
-  </script>
 </body>
 </html>
