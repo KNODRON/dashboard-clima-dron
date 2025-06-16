@@ -182,9 +182,8 @@
       try {
         const clima = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`).then(r => r.json());
 
-        document.getElementById('panelClima').innerHTML = `...`; // (código de tarjetas omitido por brevedad)
-
-        // Kp y estado de vuelo aquí...
+        // Aquí insertamos el código completo de panelClima nuevamente
+        document.getElementById('panelClima').innerHTML = `...`;
 
         const grid = document.getElementById('forecastGrid');
         if (grid.style.display === 'grid') {
@@ -208,28 +207,23 @@
         .then(res => res.json())
         .then(data => {
           grid.innerHTML = '';
-          const diasMap = {};
+          const agregados = new Set();
 
           data.list.forEach(item => {
             const fecha = new Date(item.dt * 1000);
-            const dia = fecha.toISOString().split('T')[0];
-            const hora = fecha.getHours();
-            if (!diasMap[dia] || Math.abs(hora - 12) < Math.abs(new Date(diasMap[dia].dt * 1000).getHours() - 12)) {
-              diasMap[dia] = item;
+            const diaNombre = fecha.toLocaleDateString('es-CL', { weekday: 'short' });
+            const clave = fecha.toISOString().split('T')[0];
+            if (!agregados.has(clave)) {
+              agregados.add(clave);
+              grid.innerHTML += `
+                <div class="forecast-card">
+                  <div><strong>${diaNombre}</strong></div>
+                  <div>${item.weather[0].description}</div>
+                  <div>🌡️ ${item.main.temp.toFixed(1)} °C</div>
+                  <div>💨 ${item.wind.speed} km/h</div>
+                </div>
+              `;
             }
-          });
-
-          Object.keys(diasMap).slice(0, 5).forEach(dia => {
-            const d = diasMap[dia];
-            const fecha = new Date(d.dt * 1000).toLocaleDateString('es-CL', { weekday: 'short' });
-            grid.innerHTML += `
-              <div class="forecast-card">
-                <div><strong>${fecha}</strong></div>
-                <div>${d.weather[0].description}</div>
-                <div>🌡️ ${d.main.temp.toFixed(1)} °C</div>
-                <div>💨 ${d.wind.speed} km/h</div>
-              </div>
-            `;
           });
         });
     }
