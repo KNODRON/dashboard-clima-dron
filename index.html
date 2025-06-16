@@ -209,8 +209,6 @@
             estadoVuelo.className = "status-card status-ok";
             estadoVuelo.textContent = "✅ Apto para volar";
           }
-
-          obtenerPronostico(lat, lon);
         });
 
       fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
@@ -247,7 +245,15 @@
 
     function mostrarPronostico() {
       const grid = document.getElementById('forecastGrid');
-      grid.style.display = (grid.style.display === 'grid') ? 'none' : 'grid';
+      const ciudad = document.getElementById('ciudad').value;
+      const [lat, lon] = ciudad.split(',');
+
+      if (grid.style.display === 'grid') {
+        grid.style.display = 'none';
+      } else {
+        grid.style.display = 'grid';
+        obtenerPronostico(lat, lon);
+      }
     }
 
     window.onload = obtenerDatosClimaticos;
