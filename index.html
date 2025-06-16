@@ -84,6 +84,7 @@
       grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 10px;
       margin-bottom: 30px;
+      display: none;
     }
     .forecast-card {
       background: #1e293b;
@@ -178,6 +179,7 @@
     </div>
 
     <div class="forecast-title">Pronóstico de 5 días</div>
+    <button class="btn-pro" onclick="mostrarPronostico()">🔎 Ver pronóstico</button>
     <div class="forecast-grid" id="forecastGrid"></div>
 
     <div id="estadoVuelo" class="status-card">Evaluando condiciones...</div>
@@ -255,6 +257,10 @@
           }).join('');
         })
         .catch(err => console.error('Error obteniendo pronóstico:', err));
+    }
+
+    function mostrarPronostico() {
+      document.getElementById('forecastGrid').style.display = 'grid';
     }
 
     fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json')
