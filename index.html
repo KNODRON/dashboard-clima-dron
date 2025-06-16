@@ -114,7 +114,7 @@
       background-color: #ef4444;
     }
     .forecast-grid {
-      display: none;
+      display: grid;
       grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 10px;
       margin-top: 20px;
@@ -223,30 +223,32 @@
     }
 
     function mostrarPronostico5Dias() {
-      const grid = document.getElementById('forecastGrid');
-      const visible = grid.style.display === 'grid';
-      if (visible) {
-        grid.style.display = 'none';
-        return;
-      }
       const ciudad = document.getElementById('ciudad').value;
       const [lat, lon] = ciudad.split(',');
-      fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&units=metric&lang=es&appid=${API_KEY}`)
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
         .then(res => res.json())
         .then(data => {
-          const dias = data.daily.slice(0, 5);
-          grid.innerHTML = dias.map(d => {
+          const grid = document.getElementById('forecastGrid');
+          grid.innerHTML = '';
+          const dias = {};
+          data.list.forEach(item => {
+            const fecha = item.dt_txt.split(' ')[0];
+            if (!dias[fecha]) {
+              dias[fecha] = item;
+            }
+          });
+          Object.keys(dias).slice(0, 5).forEach(key => {
+            const d = dias[key];
             const fecha = new Date(d.dt * 1000).toLocaleDateString('es-CL', { weekday: 'short' });
-            return `
+            grid.innerHTML += `
               <div class="forecast-card">
                 <div><strong>${fecha}</strong></div>
                 <div>${d.weather[0].description}</div>
-                <div>🌡️ ${d.temp.day.toFixed(1)} °C</div>
-                <div>💨 ${d.wind_speed} km/h</div>
+                <div>🌡️ ${d.main.temp.toFixed(1)} °C</div>
+                <div>💨 ${d.wind.speed} km/h</div>
               </div>
             `;
-          }).join('');
-          grid.style.display = 'grid';
+          });
         });
     }
 
