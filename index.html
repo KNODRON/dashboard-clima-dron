@@ -22,13 +22,13 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.08);
+      background-color: rgba(0, 0, 0, 0.5);
       z-index: -1;
     }
     .container {
       max-width: 1000px;
       margin: auto;
-      background-color: rgba(15, 17, 21, 0.15);
+      background-color: rgba(15, 17, 21, 0.85);
       border-radius: 10px;
       padding: 20px;
       color: #e2e8f0;
@@ -67,7 +67,7 @@
       margin-top: 10px;
     }
     .card {
-      background: rgba(30, 41, 59, 0.5);
+      background: rgba(30, 41, 59, 0.85);
       padding: 10px;
       border-radius: 10px;
       text-align: center;
@@ -135,7 +135,7 @@
       margin-top: 20px;
     }
     .forecast-card {
-      background: rgba(30, 41, 59, 0.55);
+      background: rgba(30, 41, 59, 0.85);
       padding: 10px;
       border-radius: 10px;
       text-align: center;
@@ -173,8 +173,6 @@
       <option value="-53.1638,-70.9171">Punta Arenas</option>
     </select>
 
-    </select>
-
     <div class="grid-panel" id="panelClima"></div>
 
     <button class="btn-pro" onclick="mostrarPronostico5Dias()">📆 Pronóstico 5 días</button>
@@ -198,8 +196,6 @@
 
       try {
         const clima = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`).then(r => r.json());
-
-        console.log('Clima actual:', clima); // Debug
 
         document.getElementById('panelClima').innerHTML = `
           <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
@@ -233,7 +229,6 @@
         const ultimo = kpData[kpData.length - 1];
         document.getElementById('kpValue').textContent = ultimo.kp_index.toFixed(1);
       } catch (e) {
-        console.error('Error al obtener clima:', e);
         document.getElementById('kpValue').textContent = 'N/A';
       }
     }
@@ -250,7 +245,6 @@
       fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
         .then(res => res.json())
         .then(data => {
-          console.log('Pronóstico:', data); // Debug
           grid.innerHTML = '';
           const diasUnicos = new Set();
 
@@ -264,7 +258,7 @@
                 <div class="forecast-card">
                   <div><strong>${diaNombre}</strong></div>
                   <div>${item.weather[0].description}</div>
-                  <div>🌡️ ${item.main.temp.toFixed(1)} °C</div>
+                  <div>🌡️ Mín: ${item.main.temp_min.toFixed(1)}°C / Máx: ${item.main.temp_max.toFixed(1)}°C</div>
                   <div>💨 ${item.wind.speed} km/h</div>
                 </div>
               `;
