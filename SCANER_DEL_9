@@ -1,0 +1,82 @@
+// Proyecto base Flutter para app escáner documental
+
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Escáner Documental',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: ScannerHomePage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class ScannerHomePage extends StatefulWidget {
+  @override
+  _ScannerHomePageState createState() => _ScannerHomePageState();
+}
+
+class _ScannerHomePageState extends State<ScannerHomePage> {
+  File? _image;
+  final picker = ImagePicker();
+
+  Future<void> _getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> _exportToPDF() async {
+    if (_image == null) return;
+    final pdf = pw.Document();
+    final image = pw.MemoryImage(_image!.readAsBytesSync());
+    pdf.addPage(pw.Page(build: (pw.Context context) => pw.Center(child: pw.Image(image))));
+
+    final output = await getTemporaryDirectory();
+    final file = File("${output.path}/documento_escaneado.pdf");
+    await file.writeAsBytes(await pdf.save());
+
+    await Share.shareXFiles([XFile(file.path)], text: 'Documento escaneado');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Escáner Documental')),
+      body: Center(
+        child: _image == null
+            ? Text('Toca el botón para escanear')
+            : Image.file(_image!),
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: _getImage,
+            tooltip: 'Capturar',
+            child: Icon(Icons.camera_alt),
+          ),
+          SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: _exportToPDF,
+            tooltip: 'Exportar a PDF',
+            child: Icon(Icons.picture_as_pdf),
+          ),
+        ],
+      ),
+    );
+  }
+}
