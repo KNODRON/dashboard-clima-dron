@@ -104,7 +104,7 @@
       margin-top: 20px;
     }
     .forecast-card {
-      background: rgba(30, 41, 59, 0.55);
+      background: rgba(30, 41, 59, 0.85);
       padding: 10px;
       border-radius: 10px;
       text-align: center;
@@ -150,28 +150,9 @@
 
     <label for="ciudad">Selecciona ubicación:</label>
     <select id="ciudad" onchange="obtenerDatosClimaticos()">
+      <option value="-33.4489,-70.6693">Santiago</option>
       <option value="-18.4783,-70.3126">Arica</option>
-      <option value="-20.2208,-70.1431">Iquique</option>
-      <option value="-23.65,-70.4">Antofagasta</option>
-      <option value="-27.3667,-70.3333">Copiapo</option>
-      <option value="-29.9533,-71.3436">Coquimbo</option>
-      <option value="-33.0458,-71.6197">Valparaiso</option>
-      <option value="-33.3201,-71.4074">Casablanca</option>
-      <option value="-27.12,-109.35">Ostrov Paskhi</option>
-      <option value="-33.4489,-70.6693">Santiago Centro</option>
-      <option value="-33.5156,-70.7172">Cerrillos</option>
-      <option value="-33.3928,-71.1401">Curacaví</option>
-      <option value="-33.2833,-70.75">Lampa</option>
-      <option value="-35.4264,-71.6554">Talca</option>
-      <option value="-35.3333,-72.4167">Constitucion</option>
-      <option value="-36.6066,-72.1034">Chillan</option>
-      <option value="-36.5586,-71.4817">San Fabián de Alico</option>
-      <option value="-36.8269,-73.0498">Concepcion</option>
-      <option value="-38.7359,-72.5904">Temuco</option>
       <option value="-41.4717,-72.9394">Puerto Montt</option>
-      <option value="-53.1638,-70.9171">Punta Arenas</option>
-    </select>
-    
     </select>
 
     <div class="grid-panel" id="panelClima"></div>
@@ -194,6 +175,7 @@
 
       document.getElementById('panelClima').innerHTML = `
         <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temp Actual</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
+        <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temp Mín / Máx</div><div class="card-value">${clima.main.temp_min.toFixed(1)}° / ${clima.main.temp_max.toFixed(1)}°</div></div>
         <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${clima.wind.speed} km/h</div></div>
         <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value">${clima.clouds.all} %</div></div>
         <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value">${(clima.visibility / 1000).toFixed(1)} km</div></div>
@@ -244,7 +226,7 @@
     }
 
     function cambiarIdioma(lang) {
-      // Aquí se puede implementar la lógica para cambiar idioma
+      // Implementación futura del sistema multilenguaje
     }
 
     window.onload = obtenerDatosClimaticos;
