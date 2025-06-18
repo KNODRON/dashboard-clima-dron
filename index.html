@@ -279,3 +279,237 @@
 </body>
 </html>
 
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0ea5e9">
+  <title>¿VOLAR O NO VOLAR? | Clima táctico para RPA</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: url('fondo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+      margin: 0;
+      padding: 0;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background-color: rgba(15, 17, 21, 0.85);
+      border-radius: 10px;
+      padding: 20px;
+      color: #e2e8f0;
+    }
+    .lang-selector {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    .lang-selector img {
+      width: 24px;
+      height: auto;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .title {
+      text-align: center;
+      color: #7dd3fc;
+    }
+    .title-main {
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .title-sub {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+    label, select {
+      display: block;
+      margin: auto;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    select {
+      padding: 8px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .grid-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .card {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 6px #0ea5e9;
+    }
+    .card-title {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    .card-value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #e2e8f0;
+    }
+    .card-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+    .forecast-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .forecast-card {
+      background: rgba(30, 41, 59, 0.85);
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 4px #0ea5e9;
+      font-size: 12px;
+    }
+    .nota-legal {
+      font-size: 10px;
+      text-align: center;
+      color: #e2e8f0;
+      background-color: rgba(0,0,0,0.6);
+      padding: 6px;
+      border-radius: 6px;
+      margin-top: 30px;
+    }
+    .btn-pro {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      font-family: 'Orbitron', sans-serif;
+      background: #0ea5e9;
+      color: #0f1115;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 6px #0ea5e9;
+      transition: background 0.3s;
+    }
+    .btn-pro:hover {
+      background: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="lang-selector">
+      <img src="chile-flag.png" alt="Español" onclick="cambiarIdioma('es')">
+      <img src="uk-flag.png" alt="English" onclick="cambiarIdioma('en')">
+    </div>
+    <div class="title title-main">¿VOLAR O NO VOLAR?</div>
+    <div class="title title-sub">Monitorea. Evalúa. Vuela</div>
+
+    <label for="ciudad">Selecciona ubicación:</label>
+    <select id="ciudad" onchange="obtenerDatosClimaticos()">
+      <!-- Opciones de ciudades aquí -->
+    </select>
+
+    <div class="grid-panel" id="panelClima"></div>
+
+    <button onclick="mostrarPronostico5Dias()" class="btn-pro">📆 Pronóstico 5 días</button>
+    <div id="forecastGrid" class="forecast-grid"></div>
+
+    <div class="nota-legal">
+      ⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
+    </div>
+  </div>
+
+  <script>
+    const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
+
+    async function obtenerDatosClimaticos() {
+      const [lat, lon] = document.getElementById('ciudad').value.split(',');
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`);
+      const clima = await response.json();
+
+      document.getElementById('panelClima').innerHTML = `
+        <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temp Actual</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
+        <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${clima.wind.speed} km/h</div></div>
+        <div class="card"><div class="card-icon">☁️</div><div class="card-title">Nubosidad</div><div class="card-value">${clima.clouds.all} %</div></div>
+        <div class="card"><div class="card-icon">🌫️</div><div class="card-title">Visibilidad</div><div class="card-value">${(clima.visibility / 1000).toFixed(1)} km</div></div>
+        <div class="card"><div class="card-icon">🧭</div><div class="card-title">Dirección</div><div class="card-value">${clima.wind.deg} °</div></div>
+        <div class="card"><div class="card-icon">☀️</div><div class="card-title">Sol</div><div class="card-value">${new Date(clima.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})} / ${new Date(clima.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})}</div></div>
+      `;
+    }
+
+    function mostrarPronostico5Dias() {
+      const [lat, lon] = document.getElementById('ciudad').value.split(',');
+
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=es&appid=${API_KEY}`)
+        .then(response => response.json())
+        .then(data => {
+          const forecastGrid = document.getElementById('forecastGrid');
+          forecastGrid.innerHTML = '';
+
+          const dias = {};
+          for (const item of data.list) {
+            const fecha = new Date(item.dt * 1000);
+            const diaClave = fecha.toISOString().split('T')[0];
+            if (!dias[diaClave]) {
+              dias[diaClave] = {
+                min: item.main.temp_min,
+                max: item.main.temp_max,
+                desc: item.weather[0].description
+              };
+            } else {
+              dias[diaClave].min = Math.min(dias[diaClave].min, item.main.temp_min);
+              dias[diaClave].max = Math.max(dias[diaClave].max, item.main.temp_max);
+            }
+          }
+
+          const diasClaves = Object.keys(dias).slice(0, 5);
+          for (const fecha of diasClaves) {
+            const dia = new Date(fecha);
+            const nombreDia = dia.toLocaleDateString('es-CL', { weekday: 'short' });
+            const datos = dias[fecha];
+            forecastGrid.innerHTML += `
+              <div class="forecast-card">
+                <div><strong>${nombreDia}</strong></div>
+                <div>${datos.desc}</div>
+                <div>🌡️ Min: ${datos.min.toFixed(1)}° / Max: ${datos.max.toFixed(1)}°</div>
+              </div>
+            `;
+          }
+        });
+    }
+
+    function cambiarIdioma(lang) {
+      // Aquí se puede implementar la lógica para cambiar idioma
+    }
+
+    window.onload = obtenerDatosClimaticos;
+  </script>
+</body>
+</html>
