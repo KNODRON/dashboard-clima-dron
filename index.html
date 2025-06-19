@@ -206,7 +206,12 @@
         console.log('Clima actual:', clima); // Debug
 
         document.getElementById('panelClima').innerHTML = `
-          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">Temperatura</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
+          <div class="card">
+            <div class="card-icon">🌡️</div>
+            <div class="card-title">Temperatura</div>
+            <div class="card-value">${clima.main.temp.toFixed(1)} °C</div>
+          </div>
+          <div class="card">
             <div class="card-icon">🌡️</div>
             <div class="card-title">Temp Min</div>
             <div class="card-value">${clima.main.temp_min.toFixed(1)} °C</div>
@@ -216,6 +221,7 @@
             <div class="card-title">Temp Max</div>
             <div class="card-value">${clima.main.temp_max.toFixed(1)} °C</div>
           </div>
+          <div class="card">
           <div class="card"><div class="card-icon">💨</div><div class="card-title">Viento</div><div class="card-value">${clima.wind.speed} km/h</div></div>
           <div class="card"><div class="card-icon">☀️</div><div class="card-title">Salida / Puesta</div><div class="card-value">${new Date(clima.sys.sunrise * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})} / ${new Date(clima.sys.sunset * 1000).toLocaleTimeString('es-CL', {hour12: false, hour: '2-digit', minute:'2-digit'})}</div></div>
           <div class="card"><div class="card-icon">🌧️</div><div class="card-title">Lluvia</div><div class="card-value">${(clima.rain?.['1h'] || 0)} mm</div></div>
