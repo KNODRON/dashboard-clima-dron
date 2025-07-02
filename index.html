@@ -140,15 +140,9 @@
       border-radius: 12px;
       color: #fff;
     }
-    .status-ok {
-      background-color: #22c55e;
-    }
-    .status-warning {
-      background-color: #facc15;
-    }
-    .status-bad {
-      background-color: #ef4444;
-    }
+    .status-ok { background-color: #22c55e; }
+    .status-warning { background-color: #facc15; }
+    .status-bad { background-color: #ef4444; }
     .nota-legal {
       font-size: 10px;
       text-align: center;
@@ -209,107 +203,70 @@
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
     let currentLang = 'es';
     const translations = {
-      es: {
-        titleMain: '¿VOLAR O NO VOLAR?',
-        titleSub: 'Monitorea. Evalúa. Vuela',
-        selectLocation: 'Selecciona ubicación:',
-        forecast5: '📆 Pronóstico 5 días',
-        btnPro: '✨ Probar versión PRO',
-        legal: '⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.'
-      },
-      en: {
-        titleMain: 'FLY OR NOT FLY?',
-        titleSub: 'Monitor. Assess. Fly',
-        selectLocation: 'Select location:',
-        forecast5: '📆 5-day Forecast',
-        btnPro: '✨ Try PRO version',
-        legal: '⚠️ this tool is a support and does not replace visual verification or RPA pilot judgement.'
-      }
+      es: { titleMain:'¿VOLAR O NO VOLAR?', titleSub:'Monitorea. Evalúa. Vuela', selectLocation:'Selecciona ubicación:', forecast5:'📆 Pronóstico 5 días', btnPro:'✨ Probar versión PRO', legal:'⚠️ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.' },
+      en: { titleMain:'FLY OR NOT FLY?', titleSub:'Monitor. Assess. Fly', selectLocation:'Select location:', forecast5:'📆 5-day Forecast', btnPro:'✨ Try PRO version', legal:'⚠️ this tool is a support and does not replace visual verification or RPA pilot judgement.' }
     };
 
     function cambiarIdioma(lang) {
-      currentLang = lang;
-      document.getElementById('titleMain').textContent = translations[lang].titleMain;
-      document.getElementById('titleSub').textContent = translations[lang].titleSub;
-      document.getElementById('labelCity').textContent = translations[lang].selectLocation;
-      document.getElementById('btnForecast').textContent = translations[lang].forecast5;
-      document.getElementById('btnPro').textContent = translations[lang].btnPro;
-      document.getElementById('legal').textContent = translations[lang].legal;
+      currentLang=lang;
+      const t=translations[lang];
+      document.getElementById('titleMain').textContent=t.titleMain;
+      document.getElementById('titleSub').textContent=t.titleSub;
+      document.getElementById('labelCity').textContent=t.selectLocation;
+      document.getElementById('btnForecast').textContent=t.forecast5;
+      document.getElementById('btnPro').textContent=t.btnPro;
+      document.getElementById('legal').textContent=t.legal;
       obtenerDatosClimaticos();
     }
 
     async function obtenerDatosClimaticos() {
-      const [lat, lon] = document.getElementById('ciudad').value.split(',');
+      const [lat,lon]=document.getElementById('ciudad').value.split(',');
       try {
-        const urlWeather = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}`;
-        const clima = await fetch(urlWeather).then(r => r.json());
+        const weatherUrl=`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}`;
+        const clima=await fetch(weatherUrl).then(r=>r.json());
+        const kpData=await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json').then(r=>r.json());
+        const kp=kpData[kpData.length-1].kp_index;
+        // obtener min/max de hoy via OneCall
+        const oneUrl=`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&units=metric&lang=${currentLang}&appid=${API_KEY}`;
+        const one=await fetch(oneUrl).then(r=>r.json());
+        const todayMin=one.daily[0].temp.min;
+        const todayMax=one.daily[0].temp.max;
 
-        const kpData = await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json').then(r => r.json());
-        const kp = kpData[kpData.length - 1].kp_index;
-
-        document.getElementById('panelClima').innerHTML = `
-          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">${ currentLang==='es' ? 'Temperatura' : 'Temperature' }</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
-          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">${ currentLang==='es' ? 'Temp Min' : 'Min Temp' }</div><div class="card-value">${clima.main.temp_min.toFixed(1)} °C</div></div>
-          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">${ currentLang==='es' ? 'Temp Max' : 'Max Temp' }</div><div class="card-value">${clima.main.temp_max.toFixed(1)} °C</div></div>
-          <div class="card"><div class="card-icon">💨</div><div class="card-title">${ currentLang==='es' ? 'Viento' : 'Wind' }</div><div class="card-value">${clima.wind.speed} km/h</div></div>
-          <div class="card"><div class="card-icon">☀️</div><div class="card-title">${ currentLang==='es' ? 'Salida / Puesta' : 'Sunrise / Sunset' }</div><div class="card-value">${new Date(clima.sys.sunrise*1000).toLocaleTimeString(currentLang==='es'?'es-CL':'en-US',{hour12:false,hour:'2-digit',minute:'2-digit'})} / ${new Date(clima.sys.sunset*1000).toLocaleTimeString(currentLang==='es'?'es-CL':'en-US',{hour12:false,hour:'2-digit',minute:'2-digit'})}</div></div>
-          <div class="card"><div class="card-icon">🌧️</div><div class="card-title">${ currentLang==='es' ? 'Lluvia' : 'Rain' }</div><div class="card-value">${(clima.rain?.['1h']||0)} mm</div></div>
-          <div class="card"><div class="card-icon">☁️</div><div class="card-title">${ currentLang==='es' ? 'Nubosidad' : 'Clouds' }</div><div class="card-value">${clima.clouds.all} %</div></div>
-          <div class="card"><div class="card-icon">🌫️</div><div class="card-title">${ currentLang==='es' ? 'Visibilidad' : 'Visibility' }</div><div class="card-value">${(clima.visibility/1000).toFixed(1)} km</div></div>
-          <div class="card"><div class="card-icon">🛰️</div><div class="card-title">${ currentLang==='es' ? 'Satélites' : 'Satellites' }</div><div class="card-value">${Math.floor(Math.random()*8)+14}</div></div>
+        document.getElementById('panelClima').innerHTML=`
+          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">${currentLang==='es'?'Temperatura':'Temperature'}</div><div class="card-value">${clima.main.temp.toFixed(1)} °C</div></div>
+          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">${currentLang==='es'?'Temp Min':'Min Temp'}</div><div class="card-value">${todayMin.toFixed(1)} °C</div></div>
+          <div class="card"><div class="card-icon">🌡️</div><div class="card-title">${currentLang==='es'?'Temp Max':'Max Temp'}</div><div class="card-value">${todayMax.toFixed(1)} °C</div></div>
+          <div class="card"><div class="card-icon">💨</div><div class="card-title">${currentLang==='es'?'Viento':'Wind'}</div><div class="card-value">${clima.wind.speed} km/h</div></div>
+          <div class="card"><div class="card-icon">☀️</div><div class="card-title">${currentLang==='es'?'Salida / Puesta':'Sunrise / Sunset'}</div><div class="card-value">${new Date(clima.sys.sunrise*1000).toLocaleTimeString(currentLang==='es'?'es-CL':'en-US',{hour12:false,hour:'2-digit',minute:'2-digit'})} / ${new Date(clima.sys.sunset*1000).toLocaleTimeString(currentLang==='es'?'es-CL':'en-US',{hour12:false,hour:'2-digit',minute:'2-digit'})}</div></div>
+          <div class="card"><div class="card-icon">🌧️</div><div class="card-title">${currentLang==='es'?'Lluvia':'Rain'}</div><div class="card-value">${(clima.rain?.['1h']||0)} mm</div></div>
+          <div class="card"><div class="card-icon">☁️</div><div class="card-title">${currentLang==='es'?'Nubosidad':'Clouds'}</div><div class="card-value">${clima.clouds.all} %</div></div>
+          <div class="card"><div class="card-icon">🌫️</div><div class="card-title">${currentLang==='es'?'Visibilidad':'Visibility'}</div><div class="card-value">${(clima.visibility/1000).toFixed(1)} km</div></div>
+          <div class="card"><div class="card-icon">🛰️</div><div class="card-title">${currentLang==='es'?'Satélites':'Satellites'}</div><div class="card-value">${Math.floor(Math.random()*8)+14}</div></div>
           <div class="card"><div class="card-icon">🧲</div><div class="card-title">Índice KP</div><div class="card-value">${kp.toFixed(1)}</div></div>
-          <div class="card"><div class="card-icon">🧭</div><div class="card-title">${ currentLang==='es' ? 'Dirección' : 'Direction' }</div><div class="card-value">${clima.wind.deg} °</div></div>
+          <div class="card"><div class="card-icon">🧭</div><div class="card-title">${currentLang==='es'?'Dirección':'Direction'}</div><div class="card-value">${clima.wind.deg} °</div></div>
         `;
+        // semáforo
+        const estado=document.getElementById('estadoVuelo');
+        if(clima.wind.speed>30||kp>=5||(clima.rain?.['1h']||0)>1){estado.className='status-card status-bad';estado.textContent=currentLang==='es'?'⛔ No apto para volar':'⛔ Not safe to fly';}
+        else if(clima.wind.speed>20||kp>=3||(clima.rain?.['1h']||0)>0){estado.className='status-card status-warning';estado.textContent=currentLang==='es'?'⚠️ Precaución: condiciones medias':'⚠️ Caution: moderate conditions';}
+        else {estado.className='status-card status-ok';estado.textContent=currentLang==='es'?'✅ Apto para volar':'✅ Safe to fly';}
+        // actualizar pronóstico si está visible
+        const grid=document.getElementById('forecastGrid');
+        if(grid.style.display==='grid') mostrarPronostico5Dias();
+      } catch(err){ console.error(err);}    }
 
-        // Semáforo
-        const estado = document.getElementById('estadoVuelo');
-        if (clima.wind.speed>30 || kp>=5 || (clima.rain?.['1h']||0)>1) {
-          estado.className='status-card status-bad';
-          estado.textContent = currentLang==='es'?'⛔ No apto para volar':'⛔ Not safe to fly';
-        } else if (clima.wind.speed>20 || kp>=3 || (clima.rain?.['1h']||0)>0) {
-          estado.className='status-card status-warning';
-          estado.textContent = currentLang==='es'?'⚠️ Precaución: condiciones medias':'⚠️ Caution: moderate conditions';
-        } else {
-          estado.className='status-card status-ok';
-          estado.textContent = currentLang==='es'?'✅ Apto para volar':'✅ Safe to fly';
-        }
-      } catch(err) {
-        console.error(err);
-      }
-    }
-
-    function mostrarPronostico5Dias() {
-      const grid = document.getElementById('forecastGrid');
-      const show = grid.style.display!=='grid';
-      grid.style.display = show?'grid':'none';
-      if(!show) return;
-
-      const [lat, lon] = document.getElementById('ciudad').value.split(',');
+    function mostrarPronostico5Dias(){
+      const grid=document.getElementById('forecastGrid');
+      const show=grid.style.display!=='grid';
+      grid.style.display=show?'grid':'none'; if(!show) return;
+      const [lat,lon]=document.getElementById('ciudad').value.split(',');
       fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}`)
-        .then(r=>r.json())
-        .then(data=>{
-          const dias = {};
-          data.list.forEach(item=>{
-            const d = new Date(item.dt*1000);
-            const key = d.toISOString().split('T')[0];
-            if(!dias[key]) dias[key]={min:item.main.temp_min,max:item.main.temp_max,desc:item.weather[0].description};
-            else { dias[key].min=Math.min(dias[key].min,item.main.temp_min); dias[key].max=Math.max(dias[key].max,item.main.temp_max); }
-          });
-          grid.innerHTML='';
-          Object.keys(dias).slice(0,5).forEach(date=>{
-            const d = new Date(date);
-            const name = d.toLocaleDateString(currentLang==='es'?'es-CL':'en-US',{weekday:'short'});
-            const info=dias[date];
-            grid.innerHTML+=`<div class="forecast-card">
-              <div><strong>${name}</strong></div>
-              <div>${info.desc}</div>
-              <div>🌡️ Min: ${info.min.toFixed(1)}° / Max: ${info.max.toFixed(1)}°</div>
-            </div>`;
-          });
+        .then(r=>r.json()).then(data=>{
+          const dias={}; data.list.forEach(item=>{ const d=new Date(item.dt*1000); const key=d.toISOString().split('T')[0]; if(!dias[key]) dias[key]={min:item.main.temp_min,max:item.main.temp_max,desc:item.weather[0].description}; else{dias[key].min=Math.min(dias[key].min,item.main.temp_min);dias[key].max=Math.max(dias[key].max,item.main.temp_max);} });
+          grid.innerHTML=''; Object.keys(dias).slice(0,5).forEach(date=>{ const d=new Date(date); const name=d.toLocaleDateString(currentLang==='es'?'es-CL':'en-US',{weekday:'short'}); const info=dias[date]; grid.innerHTML+=`<div class="forecast-card"><div><strong>${name}</strong></div><div>${info.desc}</div><div>🌡️ Min: ${info.min.toFixed(1)}° / Max: ${info.max.toFixed(1)}°</div></div>`; });
         });
     }
-
-    window.onload = ()=>{ cambiarIdioma('es'); };
+    window.onload=()=>{cambiarIdioma('es');};
   </script>
 </body>
 </html>
