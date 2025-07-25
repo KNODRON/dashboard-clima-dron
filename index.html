@@ -216,7 +216,7 @@
           { icon: '🌡️', title: currentLang==='es'?'Temperatura':'Temp', value: `${clima.main.temp.toFixed(1)} °C` },
           { icon: '🔻', title: currentLang==='es'?'Temp Min':'Min', value: `${clima.main.temp_min.toFixed(1)} °C` },
           { icon: '🔺', title: currentLang==='es'?'Temp Max':'Max', value: `${clima.main.temp_max.toFixed(1)} °C` },
-          { icon: '💨', title: currentLang==='es'?'Viento':'Wind', value: `${clima.wind.speed} km/h` },
+          { icon: '💨', title: currentLang==='es'?'Viento':'Wind', value: `${(clima.wind.speed * 3.6).toFixed(1)} km/h` },
           { icon: '☀️', title: currentLang==='es'?'Sol':'Sun', value: `${new Date(clima.sys.sunrise*1000).toLocaleTimeString(currentLang+'-CL',{hour12:false,hour:'2-digit',minute:'2-digit'})} / ${new Date(clima.sys.sunset*1000).toLocaleTimeString(currentLang+'-CL',{hour12:false,hour:'2-digit',minute:'2-digit'})}` },
           { icon: '🌧️', title: currentLang==='es'?'Lluvia':'Rain', value: `${(clima.rain?.['1h']||0)} mm` },
           { icon: '☁️', title: currentLang==='es'?'Nubosidad':'Clouds', value: `${clima.clouds.all} %` },
@@ -232,7 +232,8 @@
         });
         // semáforo
         const estado = document.getElementById('estadoVuelo');
-        const wind=clima.wind.speed, rain=(clima.rain?.['1h']||0);
+        const wind = clima.wind.speed * 3.6; // Convertir m/s a km/h
+        const rain = (clima.rain?.['1h']||0);
         if(rain>0||wind>30) { estado.className='status-card status-bad'; estado.textContent=currentLang==='es'?'⛔ No apto para volar':'⛔ Not safe to fly'; }
         else if(wind>20) { estado.className='status-card status-warning'; estado.textContent=currentLang==='es'?'⚠️ Precaución':'⚠️ Caution'; }
         else { estado.className='status-card status-ok'; estado.textContent=currentLang==='es'?'✅ Apto para volar':'✅ Safe to fly'; }
