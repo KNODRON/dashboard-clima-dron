@@ -426,6 +426,10 @@
         const urlNow = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}&_=${Date.now()}`;
         const resp = await fetch(urlNow, { cache: 'no-store' });
 
+        const meta = document.getElementById('metaFuentes');
+        const dtLocal = new Date(clima.dt * 1000).toLocaleString('es-CL', { hour12:false });
+        meta.textContent = `Fuente meteo: OpenWeather (weather) • Hora dato: ${dtLocal} • KP: ${document.getElementById('kpValue')?.textContent ?? '--'} (NOAA) • Satélites: N/D`;
+
         // 2) Forecast (para hora elegida)
         const respFc = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}`);
         const fc = await respFc.json();
@@ -537,7 +541,7 @@
         { icon: '☁️', title: currentLang==='es'?'Nubosidad':'Clouds', value: `${snap.clouds} %` },
         { icon: '🌫️', title: currentLang==='es'?'Visibilidad':'Visibility', value: visText },
         { icon: '☀️', title: currentLang==='es'?'Sol':'Sun', value: `${sunrise} / ${sunset}` },
-        { icon: '🛰️', title: currentLang==='es'?'Satélites':'Satellites', value: satsHtml },
+        { icon: '🛰️', title: currentLang==='es'?'Satélites':'Satellites', value: currentLang==='es'?'N/D':'N/A' },
         { icon: '🧲', title: 'KP', value: kpHtml }
       ];
 
@@ -698,5 +702,6 @@
   </script>
 </body>
 </html>
+
 
 
