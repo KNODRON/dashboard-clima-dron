@@ -223,6 +223,10 @@
     <div id="estadoVuelo" class="status-card">Evaluando condiciones...</div>
     <div id="detalleEstado" class="substatus">—</div>
 
+    <div id="metaFuentes" class="substatus" style="margin-top:10px;">
+      Fuente meteo: -- • Hora dato: -- • KP: -- • Satélites: N/D
+    </div>
+
     <button class="btn-pro" onclick="alert(currentLang==='es'?'Versión PRO en desarrollo...':'PRO version in development...')" id="btnPro">✨ Probar versión PRO</button>
 
     <div class="nota-legal" id="notaLegal">
@@ -419,8 +423,8 @@
 
       try {
         // 1) Ahora
-        const respNow = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}`);
-        const now = await respNow.json();
+        const urlNow = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}&_=${Date.now()}`;
+        const resp = await fetch(urlNow, { cache: 'no-store' });
 
         // 2) Forecast (para hora elegida)
         const respFc = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}`);
@@ -693,3 +697,4 @@
   </script>
 </body>
 </html>
+
