@@ -369,7 +369,7 @@
     // ===== KP NOAA =====
     async function obtenerKp(){
       try{
-        const r = await fetch('https://services.swpc.noaa.gov/json/planetary_k_index_1m.json');
+        fetch(`https://services.swpc.noaa.gov/json/planetary_k_index_1m.json?_=${Date.now()}`, { cache: 'no-store' })
         const k = await r.json();
         const last = k && k.length ? k[k.length - 1] : null;
         lastKp = last ? Number(last.kp_index) : null;
@@ -654,7 +654,8 @@
       if(vis) return;
 
       const [lat,lon]=document.getElementById('ciudad').value.split(',');
-      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}`)
+      const urlFc = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}&_=${Date.now()}`;
+      fetch(urlFc, { cache: 'no-store' })
         .then(r=>r.json()).then(data=>{
           const dias={};
           data.list.forEach(item=>{
@@ -697,4 +698,5 @@
   </script>
 </body>
 </html>
+
 
