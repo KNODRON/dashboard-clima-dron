@@ -1,2 +1,646 @@
-Pal loly: para que en mi nombre y representación pueda retirar los resultados de los exámenes de glucosa y electrocardiograma que me fueron realizados en el centro de salud Red Salud Alameda, ubicado en la Región Metropolitana. La presente autorización se extiende para todos los efectos legales relacionados con el retiro de dichos exámenes.
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0ea5e9">
+  <title>¿VOLAR O NO VOLAR? | Clima táctico para RPA</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-512.png">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+    }
+    body {
+      background: url('fondo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.08);
+      z-index: 0;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 40px auto 20px;
+      background-color: rgba(15,17,21,0.15);
+      border-radius: 10px;
+      padding: 20px;
+      color: #e2e8f0;
+    }
+    .lang-selector {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+    .lang-selector img {
+      width: 32px;
+      height: auto;
+      cursor: pointer;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .title { text-align: center; color: #7dd3fc; }
+    .title-main { font-size: 34px; font-weight: 700; margin-bottom: 10px; }
+    .title-sub { font-size: 28px; margin-bottom: 20px; }
 
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 640px){
+      .controls { grid-template-columns: 1fr; }
+    }
+
+    label, select, input {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+    label {
+      margin: 0;
+      margin-bottom: 6px;
+    }
+    select, input {
+      padding: 8px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      font-family: 'Orbitron', sans-serif;
+      box-sizing: border-box;
+    }
+
+    .grid-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px,1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .card {
+      background: rgba(30,41,59,0.5);
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 6px #0ea5e9;
+    }
+    .card-title { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+    .card-value { font-size: 18px; font-weight: bold; color: #e2e8f0; }
+    .card-icon { font-size: 20px; margin-bottom: 4px; }
+
+    .status-card { text-align: center; font-size: 20px; font-weight: bold; padding: 15px; border-radius: 12px; color: #fff; margin-top: 18px; }
+    .status-ok { background-color: #22c55e; }
+    .status-warning { background-color: #facc15; color: #0f1115; }
+    .status-bad { background-color: #ef4444; }
+
+    .substatus {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(0,0,0,0.35);
+      padding: 8px 10px;
+      border-radius: 10px;
+      word-break: break-word;
+    }
+
+    .forecast-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(110px,1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .forecast-card {
+      background: rgba(30,41,59,0.55);
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 4px #0ea5e9;
+      font-size: 12px;
+    }
+
+    .nota-legal {
+      font-size: 10px;
+      text-align: center;
+      color: #e2e8f0;
+      background: rgba(0,0,0,0.7);
+      padding: 6px;
+      border-radius: 6px;
+      margin-top: 22px;
+    }
+
+    .btn-pro {
+      display: block;
+      margin: 16px auto 0;
+      padding: 10px 20px;
+      font-family: 'Orbitron', sans-serif;
+      background: #0ea5e9;
+      color: #0f1115;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 6px #0ea5e9;
+      transition: background .3s;
+    }
+    .btn-pro:hover { background: #38bdf8; }
+
+    .muted { color:#94a3b8; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="lang-selector">
+      <img src="chile-flag.png" alt="Español" onclick="setLang('es')">
+      <img src="uk-flag.png" alt="English" onclick="setLang('en')">
+    </div>
+
+    <div class="title title-main" id="titleMain">¿VOLAR O NO VOLAR?</div>
+    <div class="title title-sub" id="titleSub">Monitorea. Evalúa. Vuela</div>
+
+    <div class="controls">
+      <div>
+        <label for="ciudad" id="labelCiudad">Selecciona ubicación:</label>
+        <select id="ciudad" onchange="refrescarTodo()">
+          <option value="-18.4783,-70.3126">Arica</option>
+          <option value="-20.2208,-70.1431">Iquique</option>
+          <option value="-23.65,-70.4">Antofagasta</option>
+          <option value="-27.3667,-70.3333">Copiapó</option>
+          <option value="-29.9533,-71.3436">Coquimbo</option>
+          <option value="-33.0458,-71.6197">Valparaíso</option>
+          <option value="-33.3201,-71.4074">Casablanca</option>
+          <option value="-27.12,-109.35">Isla de Pascua</option>
+          <option value="-33.4489,-70.6693">Santiago Centro</option>
+          <option value="-33.5156,-70.7172">Cerrillos</option>
+          <option value="-33.3928,-71.1401">Curacaví</option>
+          <option value="-33.2833,-70.75">Lampa</option>
+          <option value="-35.4264,-71.6554">Talca</option>
+          <option value="-35.3333,-72.4167">Constitución</option>
+          <option value="-36.6066,-72.1034">Chillán</option>
+          <option value="-36.5586,-71.4817">San Fabián de Alico</option>
+          <option value="-36.8269,-73.0498">Concepción</option>
+          <option value="-38.7359,-72.5904">Temuco</option>
+          <option value="-41.4717,-72.9394">Puerto Montt</option>
+          <option value="-53.1638,-70.9171">Punta Arenas</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="horaVuelo" id="labelHora">Hora estimada de vuelo:</label>
+        <input id="horaVuelo" type="time" step="300" onchange="refrescarTodo()">
+      </div>
+    </div>
+
+    <div class="grid-panel" id="panelClima"></div>
+
+    <button class="btn-pro" onclick="mostrarPronostico5Dias()" id="btnForecast">📆 Pronóstico 5 días</button>
+    <div class="forecast-grid" id="forecastGrid"></div>
+
+    <div id="estadoVuelo" class="status-card">Evaluando condiciones...</div>
+    <div id="detalleEstado" class="substatus">—</div>
+
+    <div id="metaFuentes" class="substatus" style="margin-top:10px;">
+      Fuente meteo: -- • Hora dato: -- • KP: -- • Satélites: N/D
+    </div>
+
+    <button class="btn-pro" onclick="alert(currentLang==='es'?'Versión PRO en desarrollo...':'PRO version in development...')" id="btnPro">✨ Probar versión PRO</button>
+
+    <div class="nota-legal" id="notaLegal">
+      ⚠ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.
+    </div>
+  </div>
+
+  <script>
+    let currentLang = 'es';
+
+    const texts = {
+      es: {
+        titleMain: '¿VOLAR O NO VOLAR?',
+        titleSub: 'Monitorea. Evalúa. Vuela',
+        labelCiudad: 'Selecciona ubicación:',
+        labelHora: 'Hora estimada de vuelo:',
+        btnForecast: '📆 Pronóstico 5 días',
+        estadoDefault: 'Evaluando condiciones...',
+        notaLegal: '⚠ esta herramienta es un apoyo y no reemplaza la verificación visual ni el criterio del piloto RPA.',
+        evalBase: 'Evaluación basada en: ',
+        ahora: 'Ahora',
+        horaSel: 'Hora seleccionada',
+        noData: 'Sin datos suficientes',
+        safe: '✅ Apto para volar',
+        caution: '⚠️ Precaución',
+        nosafe: '⛔ No apto para volar',
+        windLimit: 'Límite viento',
+        gust: 'Racha',
+        rain: 'Lluvia',
+        vis: 'Visibilidad',
+        kp: 'KP'
+      },
+      en: {
+        titleMain: 'FLY OR NOT FLY?',
+        titleSub: 'Monitor. Evaluate. Fly',
+        labelCiudad: 'Select location:',
+        labelHora: 'Planned flight time:',
+        btnForecast: '📆 5-day forecast',
+        estadoDefault: 'Evaluating conditions...',
+        notaLegal: '⚠ This tool serves as a supplementary aid and does not replace visual inspection or the RPA pilot’s judgment.',
+        evalBase: 'Evaluation based on: ',
+        ahora: 'Now',
+        horaSel: 'Selected time',
+        noData: 'Not enough data',
+        safe: '✅ Safe to fly',
+        caution: '⚠️ Caution',
+        nosafe: '⛔ Not safe to fly',
+        windLimit: 'Wind limit',
+        gust: 'Gust',
+        rain: 'Rain',
+        vis: 'Visibility',
+        kp: 'KP'
+      }
+    };
+
+    function setLang(lang) {
+      currentLang = lang;
+      const t = texts[lang];
+      document.getElementById('titleMain').textContent = t.titleMain;
+      document.getElementById('titleSub').textContent = t.titleSub;
+      document.getElementById('labelCiudad').textContent = t.labelCiudad;
+      document.getElementById('labelHora').textContent = t.labelHora;
+      document.getElementById('btnForecast').textContent = t.btnForecast;
+      document.getElementById('estadoVuelo').textContent = t.estadoDefault;
+      document.getElementById('notaLegal').textContent = t.notaLegal;
+      refrescarTodo();
+    }
+
+    const LIMITS = {
+      wind_ok: 20,
+      wind_warn: 30,
+      gust_warn_extra: 8,
+      rain_any_bad: 0.1,
+      vis_warn_km: 3.0,
+      vis_bad_km: 1.0,
+      kp_warn: 5.0,
+      kp_bad: 7.0
+    };
+
+    const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
+
+    function fmtTimeFromUnix(sec, localeTag){
+      return new Date(sec * 1000).toLocaleTimeString(localeTag, {hour12:false, hour:'2-digit', minute:'2-digit'});
+    }
+    function degToCompass(deg){
+      const dirs = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+      const i = Math.round(((deg % 360) / 22.5)) % 16;
+      return dirs[i];
+    }
+    function weatherEmoji(main, icon){
+      const night = icon && icon.endsWith('n');
+      const m = (main || '').toLowerCase();
+      if(m.includes('thunder')) return "⛈️";
+      if(m.includes('drizzle')) return "🌦️";
+      if(m.includes('rain')) return "🌧️";
+      if(m.includes('snow')) return "🌨️";
+      if(m.includes('mist') || m.includes('fog') || m.includes('haze') || m.includes('smoke')) return "🌫️";
+      if(m.includes('cloud')) return night ? "☁️🌙" : "☁️";
+      if(m.includes('clear')) return night ? "🌙" : "☀️";
+      return "🌡️";
+    }
+
+    function setDefaultTimeIfEmpty(){
+      const el = document.getElementById('horaVuelo');
+      if(el.value) return;
+      const now = new Date();
+      now.setMinutes(Math.ceil(now.getMinutes()/5)*5);
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      el.value = `${hh}:${mm}`;
+    }
+
+    // ===== Estado global =====
+    let snapshot = null; // dato usado para evaluar (now o forecast)
+    let lastKp = null;
+    let lastKpTime = null; // string
+
+    async function refrescarTodo(){
+      setDefaultTimeIfEmpty();
+      // KP y meteo en paralelo (satélites: N/D, no hacemos fetch)
+      await Promise.all([
+        obtenerDatosClimaticos(),
+        obtenerKp()
+      ]).catch(_=>{});
+      actualizarMetaFuentes(); // asegura que se vea aunque llegue en orden distinto
+    }
+
+    // ===== KP NOAA (ARREGLADO) =====
+    async function obtenerKp(){
+      try{
+        const r = await fetch(`https://services.swpc.noaa.gov/json/planetary_k_index_1m.json?_=${Date.now()}`, { cache: 'no-store' });
+        const k = await r.json();
+        const last = k && k.length ? k[k.length - 1] : null;
+        lastKp = last ? Number(last.kp_index) : null;
+        lastKpTime = last?.time_tag ? String(last.time_tag) : null;
+        // re-evaluar si ya hay snapshot
+        recalcularEstado();
+      } catch(e){
+        lastKp = null;
+        lastKpTime = null;
+      }
+    }
+
+    // ===== Meteo: NOW + Forecast según hora =====
+    async function obtenerDatosClimaticos() {
+      const [lat, lon] = document.getElementById('ciudad').value.split(',');
+      const localeTag = (currentLang==='es' ? 'es-CL' : 'en-GB');
+      const t = texts[currentLang];
+
+      try {
+        // NOW
+        const urlNow = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}&_=${Date.now()}`;
+        const rNow = await fetch(urlNow, { cache: 'no-store' });
+        const now = await rNow.json();
+
+        // FORECAST
+        const urlFc = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}&_=${Date.now()}`;
+        const rFc = await fetch(urlFc, { cache: 'no-store' });
+        const fc = await rFc.json();
+
+        const selected = pickForecastClosest(fc);
+        const usingForecast = !!selected;
+
+        const src = usingForecast ? selected : now;
+
+        const tempC = Number(src.main?.temp);
+        const windKmh = Number(src.wind?.speed) * 3.6;
+        const gustKmh = (src.wind?.gust != null) ? Number(src.wind.gust) * 3.6 : null;
+
+        const rainMm = (src.rain?.['1h'] ?? src.rain?.['3h'] ?? 0);
+        const rainMmH = (src.rain?.['3h'] != null) ? (Number(src.rain['3h']) / 3) : Number(rainMm);
+
+        const clouds = Number(src.clouds?.all ?? 0);
+        const visKm = (src.visibility != null)
+          ? (Number(src.visibility)/1000)
+          : (now.visibility != null ? Number(now.visibility)/1000 : null);
+
+        const deg = Number(src.wind?.deg ?? 0);
+
+        const main = src.weather?.[0]?.main ?? now.weather?.[0]?.main ?? '';
+        const desc = src.weather?.[0]?.description ?? now.weather?.[0]?.description ?? '';
+        const icon = src.weather?.[0]?.icon ?? now.weather?.[0]?.icon ?? '';
+
+        snapshot = {
+          tempC, windKmh, gustKmh, rainMmH, clouds, visKm, deg,
+          sunrise: now.sys?.sunrise, sunset: now.sys?.sunset,
+          main, desc, icon,
+          // timestamp del dato usado:
+          dtUsed: src.dt ?? now.dt,
+          // y de qué endpoint viene:
+          sourceUsed: usingForecast ? 'OpenWeather (forecast 3h)' : 'OpenWeather (weather)',
+          basisText: usingForecast ? `${t.horaSel} (${document.getElementById('horaVuelo').value})` : t.ahora
+        };
+
+        renderCards(now, snapshot, localeTag);
+        recalcularEstado();
+        actualizarMetaFuentes();
+
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function pickForecastClosest(fc){
+      try{
+        if(!fc || !fc.list || !fc.list.length) return null;
+
+        const timeStr = document.getElementById('horaVuelo').value;
+        if(!timeStr) return null;
+
+        const [hh, mm] = timeStr.split(':').map(Number);
+        const now = new Date();
+        let target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0, 0);
+
+        if(target.getTime() < Date.now() - 2*60*60*1000){
+          target.setDate(target.getDate() + 1);
+        }
+
+        let best = null;
+        let bestDiff = Infinity;
+        for(const item of fc.list){
+          const d = new Date(item.dt * 1000);
+          const diff = Math.abs(d.getTime() - target.getTime());
+          if(diff < bestDiff){
+            bestDiff = diff;
+            best = item;
+          }
+        }
+        if(bestDiff > 6*60*60*1000) return null;
+        return best;
+      } catch(_){
+        return null;
+      }
+    }
+
+    function renderCards(now, snap, localeTag){
+      const panel = document.getElementById('panelClima');
+      panel.innerHTML = '';
+
+      const wxEmoji = weatherEmoji(snap.main, snap.icon);
+      const windDir = `${snap.deg}° (${degToCompass(snap.deg)})`;
+
+      const sunrise = now.sys?.sunrise ? fmtTimeFromUnix(now.sys.sunrise, localeTag) : '--';
+      const sunset  = now.sys?.sunset  ? fmtTimeFromUnix(now.sys.sunset,  localeTag) : '--';
+
+      const gustText = (snap.gustKmh==null) ? '—' : `${snap.gustKmh.toFixed(1)} km/h`;
+      const visText  = (snap.visKm==null) ? '—' : `${snap.visKm.toFixed(1)} km`;
+      const rainText = (snap.rainMmH==null) ? '—' : `${snap.rainMmH.toFixed(2)} mm/h`;
+
+      const kpValueText = (lastKp==null) ? '--' : lastKp.toFixed(1);
+
+      const cards = [
+        { icon: wxEmoji, title: currentLang==='es'?'Condición':'Condition', value: `${snap.desc}` },
+        { icon: '🌡️', title: currentLang==='es'?'Temperatura':'Temp', value: `${Number(snap.tempC).toFixed(1)} °C` },
+        { icon: '💨', title: currentLang==='es'?'Viento':'Wind', value: `${snap.windKmh.toFixed(1)} km/h` },
+        { icon: '🌪️', title: currentLang==='es'?'Racha':'Gust', value: gustText },
+        { icon: '🧭', title: currentLang==='es'?'Dirección':'Dir', value: windDir },
+        { icon: '🌧️', title: currentLang==='es'?'Lluvia':'Rain', value: rainText },
+        { icon: '☁️', title: currentLang==='es'?'Nubosidad':'Clouds', value: `${snap.clouds} %` },
+        { icon: '🌫️', title: currentLang==='es'?'Visibilidad':'Visibility', value: visText },
+        { icon: '☀️', title: currentLang==='es'?'Sol':'Sun', value: `${sunrise} / ${sunset}` },
+        { icon: '🛰️', title: currentLang==='es'?'Satélites':'Satellites', value: currentLang==='es'?'N/D':'N/A' },
+        { icon: '🧲', title: 'KP', value: kpValueText }
+      ];
+
+      cards.forEach(c=>{
+        const div=document.createElement('div');
+        div.className='card';
+        div.innerHTML=`<div class="card-icon">${c.icon}</div><div class="card-title">${c.title}</div><div class="card-value">${c.value}</div>`;
+        panel.appendChild(div);
+      });
+
+      const detalle = document.getElementById('detalleEstado');
+      detalle.textContent = `${texts[currentLang].evalBase}${snap.basisText} • ${texts[currentLang].windLimit}: OK≤${LIMITS.wind_ok} / ⚠≤${LIMITS.wind_warn} km/h`;
+    }
+
+    function recalcularEstado(){
+      const t = texts[currentLang];
+      const estado = document.getElementById('estadoVuelo');
+
+      if(!snapshot){
+        estado.className='status-card';
+        estado.textContent=t.estadoDefault;
+        return;
+      }
+
+      let level = 0;
+      const reasons = [];
+
+      // viento
+      if(snapshot.windKmh > LIMITS.wind_warn){
+        level = Math.max(level, 2);
+        reasons.push(`${t.windLimit}: ${snapshot.windKmh.toFixed(1)} km/h`);
+      } else if(snapshot.windKmh > LIMITS.wind_ok){
+        level = Math.max(level, 1);
+        reasons.push(`${t.windLimit}: ${snapshot.windKmh.toFixed(1)} km/h`);
+      }
+
+      // rachas
+      if(snapshot.gustKmh != null && snapshot.gustKmh > snapshot.windKmh + LIMITS.gust_warn_extra){
+        level = Math.max(level, 1);
+        reasons.push(`${t.gust}: ${snapshot.gustKmh.toFixed(1)} km/h`);
+      }
+      if(snapshot.gustKmh != null && snapshot.gustKmh > LIMITS.wind_warn + 5){
+        level = Math.max(level, 2);
+        reasons.push(`${t.gust}: ${snapshot.gustKmh.toFixed(1)} km/h`);
+      }
+
+      // lluvia
+      if(snapshot.rainMmH != null && snapshot.rainMmH >= LIMITS.rain_any_bad){
+        level = Math.max(level, 2);
+        reasons.push(`${t.rain}: ${snapshot.rainMmH.toFixed(2)} mm/h`);
+      }
+
+      // visibilidad
+      if(snapshot.visKm != null){
+        if(snapshot.visKm < LIMITS.vis_bad_km){
+          level = Math.max(level, 2);
+          reasons.push(`${t.vis}: ${snapshot.visKm.toFixed(1)} km`);
+        } else if(snapshot.visKm < LIMITS.vis_warn_km){
+          level = Math.max(level, 1);
+          reasons.push(`${t.vis}: ${snapshot.visKm.toFixed(1)} km`);
+        }
+      }
+
+      // KP
+      if(lastKp != null){
+        if(lastKp >= LIMITS.kp_bad){
+          level = Math.max(level, 2);
+          reasons.push(`${t.kp}: ${lastKp.toFixed(1)}`);
+        } else if(lastKp >= LIMITS.kp_warn){
+          level = Math.max(level, 1);
+          reasons.push(`${t.kp}: ${lastKp.toFixed(1)}`);
+        }
+      }
+
+      if(level === 2){
+        estado.className='status-card status-bad';
+        estado.textContent = t.nosafe;
+      } else if(level === 1){
+        estado.className='status-card status-warning';
+        estado.textContent = t.caution;
+      } else {
+        estado.className='status-card status-ok';
+        estado.textContent = t.safe;
+      }
+
+      const det = document.getElementById('detalleEstado');
+      if(reasons.length){
+        det.innerHTML = `<span class="muted">${t.evalBase}${snapshot.basisText}</span> • ${reasons.join(' • ')}`;
+      } else {
+        det.innerHTML = `<span class="muted">${t.evalBase}${snapshot.basisText}</span> • ${t.noData}`;
+      }
+    }
+
+    function actualizarMetaFuentes(){
+      const meta = document.getElementById('metaFuentes');
+      if(!meta) return;
+
+      const localeTag = (currentLang==='es' ? 'es-CL' : 'en-GB');
+
+      let meteoSource = '--';
+      let meteoTime = '--';
+
+      if(snapshot?.dtUsed){
+        meteoSource = snapshot.sourceUsed || 'OpenWeather';
+        meteoTime = new Date(snapshot.dtUsed * 1000).toLocaleString(localeTag, { hour12:false });
+      }
+
+      const kpText = (lastKp==null) ? '--' : lastKp.toFixed(1);
+      const kpTimeText = lastKpTime ? ` @ ${lastKpTime}` : '';
+
+      meta.textContent =
+        `Fuente meteo: ${meteoSource} • ` +
+        `Hora dato: ${meteoTime} • ` +
+        `KP: ${kpText}${kpTimeText} (NOAA) • ` +
+        `Satélites: ${currentLang==='es'?'N/D':'N/A'}`;
+    }
+
+    function mostrarPronostico5Dias() {
+      const grid=document.getElementById('forecastGrid');
+      const vis=grid.style.display==='grid';
+      grid.style.display=vis?'none':'grid';
+      if(vis) return;
+
+      const [lat,lon]=document.getElementById('ciudad').value.split(',');
+      const urlFc = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&lang=${currentLang}&appid=${API_KEY}&_=${Date.now()}`;
+      fetch(urlFc, { cache: 'no-store' })
+        .then(r=>r.json()).then(data=>{
+          const dias={};
+          data.list.forEach(item=>{
+            const d=new Date(item.dt*1000).toISOString().split('T')[0];
+            const main = item.weather?.[0]?.main ?? '';
+            const icon = item.weather?.[0]?.icon ?? '';
+            if(!dias[d]){
+              dias[d]={
+                min:item.main.temp_min,
+                max:item.main.temp_max,
+                desc:item.weather[0].description,
+                main, icon
+              };
+            } else {
+              dias[d].min=Math.min(dias[d].min,item.main.temp_min);
+              dias[d].max=Math.max(dias[d].max,item.main.temp_max);
+            }
+          });
+
+          const keys=Object.keys(dias).slice(1,6);
+          grid.innerHTML='';
+          keys.forEach(d=>{
+            const name=new Date(d).toLocaleDateString(currentLang==='es'?'es-CL':'en-GB',{weekday:'short'});
+            const wx = weatherEmoji(dias[d].main, dias[d].icon);
+            grid.innerHTML+=`
+              <div class="forecast-card">
+                <div><strong>${name}</strong></div>
+                <div style="font-size:18px;margin:6px 0;">${wx}</div>
+                <div>${dias[d].desc}</div>
+                <div>🌡️ Min:${dias[d].min.toFixed(1)}° / Max:${dias[d].max.toFixed(1)}°</div>
+              </div>`;
+          });
+        });
+    }
+
+    window.onload=function(){
+      setLang('es');
+    };
+  </script>
+</body>
+</html>
