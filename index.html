@@ -284,15 +284,21 @@
     }
 
     const LIMITS = {
-      wind_ok: 20,
-      wind_warn: 30,
-      gust_warn_extra: 8,
-      rain_any_bad: 0.1,
-      vis_warn_km: 3.0,
-      vis_bad_km: 1.0,
-      kp_warn: 5.0,
-      kp_bad: 7.0
-    };
+  wind_ok: 20,
+  wind_warn: 30,
+  gust_warn_extra: 8,
+
+  // Si hay cualquier lluvia detectable, no apto.
+  rain_any_bad: 0.01,
+
+  // Visibilidad
+  vis_warn_km: 5.0,
+  vis_bad_km: 3.0,
+
+  // KP
+  kp_warn: 4.0,
+  kp_bad: 5.0
+};
 
     const API_KEY = '0dcba44d4ee993e2748ce8c1472d0dc7';
 
@@ -524,10 +530,29 @@
       }
 
       // lluvia
-      if(snapshot.rainMmH != null && snapshot.rainMmH >= LIMITS.rain_any_bad){
-        level = Math.max(level, 2);
-        reasons.push(`${t.rain}: ${snapshot.rainMmH.toFixed(2)} mm/h`);
-      }
+      // lluvia / llovizna / tormenta
+const condicionTexto = `${snapshot.main || ''} ${snapshot.desc || ''}`.toLowerCase();
+
+const hayLluviaPorTexto =
+  condicionTexto.includes('rain') ||
+  condicionTexto.includes('lluvia') ||
+  condicionTexto.includes('drizzle') ||
+  condicionTexto.includes('llovizna') ||
+  condicionTexto.includes('thunderstorm') ||
+  condicionTexto.includes('tormenta');
+
+const hayLluviaPorMm =
+  snapshot.rainMmH != null && snapshot.rainMmH >= LIMITS.rain_any_bad;
+
+if (hayLluviaPorTexto || hayLluviaPorMm) {
+  level = Math.max(level, 2);
+
+  const lluviaTexto = snapshot.rainMmH != null
+    ? `${t.rain}: ${snapshot.rainMmH.toFixed(2)} mm/h`
+    : `${t.rain}: ${snapshot.desc}`;
+
+  reasons.push(lluviaTexto);
+}
 
       // visibilidad
       if(snapshot.visKm != null){
@@ -566,7 +591,7 @@
       if(reasons.length){
         det.innerHTML = `<span class="muted">${t.evalBase}${snapshot.basisText}</span> • ${reasons.join(' • ')}`;
       } else {
-        det.innerHTML = `<span class="muted">${t.evalBase}${snapshot.basisText}</span> • ${t.noData}`;
+        det.innerHTML = `<span class="muted">${t.evalBase}${snapshot.basisText}</span> • Condiciones dentro de parámetros`;
       }
     }
 
